@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Scrum Manager</title>
+
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" type="image/png" href="/static/img/logo.png">
+</head>
+<body>
+<div class="d-flex h-100 flex-column align-items-center justify-content-center">
+    <img src="/static/img/logo.png" class="w-25 mb-3">
+    <h3>Bitte Konto auswählen</h3>
+    <div class="card-deck">
+        {% for user in users %}
+            <form method="post">
+                <div class="card" style="width: 20rem;">
+                    <div class="card-body">
+                        <h4 class="card-title">{{ user.name }}</h4>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle }}</h6>
+                        <p class="card-text">
+                            ...
+                        </p>
+                        <input type="hidden" name="user_id" value="{{ user.id }}">
+                        <input type="hidden" name="next" value="{{ next }}">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </div>
+            </form>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
