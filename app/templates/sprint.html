@@ -1,126 +1,149 @@
 {% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="/static/css/sprint.css">
+<script src="/static/js/sprint.js"></script>
+{% endblock %}
 
 {% block body %}
-    <div class="container mt-3 p-3 bg-white rounded">
-        <div class="pt-2">
-            <form method="post" id="sprint-form">
-                <div class="row mb-2">
-                    <h3 class="col-10">Sprint 1</h3>
-                    <div class="col">
-                        <input type="hidden" id="data-input" name="data">
-                        <button class="btn btn-primary col" id="speichern">Speichern</button>
-                    </div>
-                </div>
+<div class="container mt-3 p-3 bg-white">
+    <form method="get" id="sprint-form">
+        <div class="row mb-2">
+            <h3 class="col-10">Sprint 1</h3>
+            <div class="col">
+                <input type="hidden" id="data-input" name="data">
+                <button class="btn btn-primary col" id="speichern">Speichern</button>
+            </div>
+        </div>
 
-                <div class="form-group row">
-                    <label for="start" class="col-2 col-form-label">Start</label>
-                    <div class="col-10">
-                        <input class="form-control date-input" id="start" type="text" name="start"
-                               value="2.1.2000">
-                    </div>
+        <div class="form-group row">
+            <label for="start" class="col-2 col-form-label">Start</label>
+            <div class="col-10">
+                <input class="form-control date-input" id="start" type="text" name="start"
+                       value="2.1.2000">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="ende" class="col-2 col-form-label">Ende</label>
+            <div class="col-10">
+                <input class="form-control date-input" id="ende" type="text" name="ende"
+                       value="1.1.2000">
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-bordered mt-4 mb-0 table-sm" id="taskboard">
+        <thead>
+        <tr>
+            <th class="text-center">User Story</th>
+            <th class="text-center">Backlog</th>
+            <th class="text-center">In bearbeitung</th>
+            <th class="text-center">Fertig</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <button class="float-right btn btn-light edit-story" type="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <h5 class="story-name">Nutzer Management</h5>
+                <small class="story-beschreibung">
+                    Als Nutzer möchte ich eine Konto habe und mich ein und ausloggen können
+                </small>
+            </td>
+            <td>
+                <div class="border border-dark rounded p-2 m-2 bg-white task">
+                    <button class="float-right btn btn-light edit-task" type="button">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button>
+                    <span class="task-name">Login Seite</span>
+                    <i class="d-block text-muted task-user">Bob</i>
                 </div>
-                <div class="form-group row">
-                    <label for="ende" class="col-2 col-form-label">Ende</label>
-                    <div class="col-10">
-                        <input class="form-control date-input" id="ende" type="text" name="ende"
-                               value="1.1.2000">
+            </td>
+        </tr>
+        <tr>
+            <td class="text-center">
+                <button class="btn btn-light edit-story" type="button">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+
+                </button>
+            </td>
+            <td colspan="3" class="text-center">
+                <button class="btn btn-light" id="task-create" type="button">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- EDIT STORY -->
+<div class="modal" id="editStoryModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action="/sprints/story">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Story bearbeiten</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="beschreibung">Beschreibung</label>
+                        <input id="beschreibung" name="beschreibung" type="text" class="form-control">
                     </div>
+                    <input type="hidden" name="id" id="id">
+                    <input type="hidden" name="sprint_id" value="1">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
                 </div>
             </form>
-
-            <table class="table table-bordered mt-4 table-sm" id="taskboard">
-                <thead>
-                <tr>
-                    <th class="text-center">User Story</th>
-                    <th class="text-center">Backlog</th>
-                    <th class="text-center">In bearbeitung</th>
-                    <th class="text-center">Fertig</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="text-center">
-                        <button class="btn btn-light edit-story" type="button">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-
-                        </button>
-                    </td>
-                    <td colspan="3" class="text-center">
-                        <button class="btn btn-light" id="task-create" type="button">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
         </div>
+    </div>
+</div>
 
-        <!-- EDIT STORY -->
-        <div class="modal" id="editStoryModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <form method="post" action="/sprints/story">
-                        <div class="modal-header">
-                            <h5 class="modal-title">User Story bearbeiten</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="beschreibung">Beschreibung</label>
-                                <input id="beschreibung" name="beschreibung" type="text" class="form-control">
-                            </div>
-                            <input type="hidden" name="id" id="id">
-                            <input type="hidden" name="sprint_id" value="1">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Speichern</button>
-                        </div>
-                    </form>
+<!-- EDIT TASK -->
+<div class="modal" id="editTaskModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">User Story bearbeiten</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="task-name">Beschreibung</label>
+                    <input id="task-name" name="beschreibung" type="text" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="task-user">User</label>
+                    <select class="form-control" id="task-user">
+                        <option value="1">User</option>
+                    </select>
                 </div>
             </div>
-        </div>
-
-        <!-- EDIT TASK -->
-        <div class="modal" id="editTaskModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">User Story bearbeiten</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="task-name">Beschreibung</label>
-                            <input id="task-name" name="beschreibung" type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="task-user">User</label>
-                            <select class="form-control" id="task-user">
-                                <option value="1">User</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="task-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
-                        <button id="task-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal align-items-center justify-content-center" id="loadingModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content p-5">
-                    <div class="modal-body">
-                        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-                        <div class="text-muted text-center">Lädt...</div>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button id="task-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
+                <button id="task-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal align-items-center justify-content-center" id="loadingModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content p-5">
+            <div class="modal-body">
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <div class="text-muted text-center">Lädt...</div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
