@@ -14,29 +14,32 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="shortcut icon" type="image/png" href="/static/img/logo.png">
+
 </head>
 <body>
-<div class="d-flex h-100 flex-column align-items-center justify-content-center">
+<img class="bg-img" src="/static/img/loginBG.jpg">
+
+
+<div class="login w-50 p-3 d-flex rounded justify-content-center align-items-center flex-column">
     <img src="/static/img/logo.png" class="w-25 mb-3">
     <h3>Bitte Konto auswählen</h3>
-    <div class="card-deck">
+    <div class="card-deck" style="margin-top: 20px; overflow: auto;">
         {% for user in users %}
-            <form method="post">
-                <div class="card" style="width: 20rem;">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ user.name }}</h4>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle }}</h6>
-                        <p class="card-text">
-                            ...
-                        </p>
-                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                        <input type="hidden" name="next" value="{{ next }}">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
+        <form method="get" action="dev/dashboard">
+            <div class="card" style="width: 10rem; margin-top: 10px;">
+                <div class="card-body border border-dark bg-secondary text-white rounded">
+                    <h4 class="card-title text-center">{{ user.name }}</h4>
+                    <h6 class="card-subtitle mb-2 text-muted text-center">{{ user.rolle }}</h6>
+                    <p class="card-text"></p>
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <input type="hidden" name="next" value="{{ next }}">
+                    <button type="submit" class="btn btn-light" style="width: 100%"> Login </button>
                 </div>
-            </form>
+            </div>
+        </form>
         {% endfor %}
     </div>
 </div>
+
 </body>
 </html>

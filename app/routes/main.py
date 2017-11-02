@@ -8,4 +8,5 @@ main_blueprint = Blueprint('main', __name__)
 
 @main_blueprint.route("/")
 def index():
-    return render_template("login.html")
+    users = User.query.all()
+    return render_template("login.html", users=users)
