@@ -39,9 +39,19 @@ html, body {
     max-height: 80%;
 
     background-color: #fffc;
-    box-shadow: #0006 5px 5px 10px 11px;
+    box-shadow: #0006 0 0 15px 11px;
 }
 
+.logins {
+    margin-top: 20px;
+    width: 100%;
+    overflow: auto;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, auto));
+    grid-gap: 1em;
+    justify-content: space-around;
+}
 
 .bg-img {
     position: absolute;
