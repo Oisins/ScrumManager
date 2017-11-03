@@ -1,79 +1,52 @@
-{% extends "base.html" %} {% block body %}
-<div class="container">
-    <div class="row text-center">
-        <div class="col">
-            <h4 class="text-muted">Project Owner</h4>
+{% extends "base.html" %}
+{% block head %}
+{{ super () }}
+<link rel="stylesheet" href="/static/css/users.css">
+{% endblock %}
+
+{% block body %}
+    <div id="container" class="container mt-3">
+        <div id="anzahl">
+            <span>
+                <i class="fa fa-black-tie" aria-hidden="true"></i> 1
+            </span>
+            <span>
+                <i class="fa fa-graduation-cap " aria-hidden="true"></i> 2
+            </span>
+            <span>
+                <i class="fa fa-users" aria-hidden="true"></i> 3
+            </span>
         </div>
-        <div class="col">
-            <h4 class="text-muted">Scrum Master</h4>
+        <div id="button">
+            <button type="button" class="btn btn-success">Speichern</button>
         </div>
-        <div class="col">
-            <h4 class="text-muted">Team</h4>
+        <div id="users">
+            {% for i in range(7) %}
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Name {{ i }}</h4>
+                        <p class="card-text">
+                            <div>
+                                <i class="fa fa-cogs text-warning" aria-hidden="true"></i> 2
+                            </div>
+                            <div>
+                                <i class="fa fa-check text-success" aria-hidden="true"></i> 3
+                            </div>
+                        </p>
+                        <div class="form-group">
+                            <label for="exampleFormControlSelect1">Rolle:</label>
+                            <select class="form-control" id="exampleFormControlSelect1">
+                              <option>Master</option>
+                              <option>Team</option>
+                              <option>Owner</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-    </div>
-    <div class="row" id="rollen">
-        <div class="col">
-            <div class="card mb-3" style="width: 20rem;">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card" style="width: 20rem;">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card mb-3" style="width: 20rem; ">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-            <div class="card" style="width: 20rem; ">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-            <div class="card" style="width: 20rem; ">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-            <div class="card" style="width: 20rem; ">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
-            <div class="card" style="width: 20rem; ">
-                <div class="card-body">
-                    <h4 class="card-title">Card title</h4>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
-                        card's content.</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
-                </div>
-            </div>
+        <div id="hinzufügen" class="status p-3">
+            <a class="bth btn-light p-3"><i class="fa fa-plus" aria-hidden="true"></i></a>
         </div>
     </div>
-</div>
 {% endblock %}
