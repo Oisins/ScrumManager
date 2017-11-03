@@ -1,47 +1,52 @@
-{% extends "base.html" %} {% block body %}
-<div class="container mt-3">
-    <div>
-        Für dieses Projekt sind n Sprints geplant. Zurzeit befinden Sie sich im n.
-    </div>
-    <div class="sprint p-3 mb-3 border border-info">
-        <span class="dauer p-2 rounded">5 Tage noch</span>
-        <h4 class="card-title">Sprint 1</h4>
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/sprints.css">
+{% endblock %}
+{% block body %}
+    <div class="container mt-3">
+        <div>
+            Für dieses Projekt sind n Sprints geplant. Zurzeit befinden Sie sich im n.
+        </div>
+        <div class="sprint p-3 mb-3 border border-info">
+            <span class="dauer p-2 rounded">5 Tage noch</span>
+            <h4 class="card-title">Sprint 1</h4>
 
-        <p class="card-text">
-            Start: 1.1.2000<br> Ende: 2.1.2000
-        </p>
-        <a href="/sprints/1" class="btn btn-primary">Details</a>
-        <div class="status mt-3 p-2">
+            <p class="card-text">
+                Start: 1.1.2000<br> Ende: 2.1.2000
+            </p>
+            <a href="/sprints/1" class="btn btn-primary">Details</a>
+            <div class="status mt-3 p-2">
             <span>
                 <i class="fa fa-list text-danger" aria-hidden="true"></i> 1
             </span>
-            <span>
+                <span>
                 <i class="fa fa-cogs text-warning" aria-hidden="true"></i> 2
             </span>
-            <span>
+                <span>
                 <i class="fa fa-check text-success" aria-hidden="true"></i> 3
             </span>
+            </div>
         </div>
-    </div>
-    <div class="sprint p-3 mb-3">
-        <span class="dauer p-2 rounded">5 Tage noch</span>
-        <h4 class="card-title">Sprint 1</h4>
+        <div class="sprint p-3 mb-3">
+            <span class="dauer p-2 rounded">5 Tage noch</span>
+            <h4 class="card-title">Sprint 1</h4>
 
-        <p class="card-text">
-            Start: 1.1.2000<br> Ende: 2.1.2000
-        </p>
-        <a href="/sprints/1" class="btn btn-primary">Details</a>
-        <div class="status mt-3 p-2">
+            <p class="card-text">
+                Start: 1.1.2000<br> Ende: 2.1.2000
+            </p>
+            <a href="/sprints/1" class="btn btn-primary">Details</a>
+            <div class="status mt-3 p-2">
             <span>
                 <i class="fa fa-list text-danger" aria-hidden="true"></i> 1
             </span>
-            <span>
+                <span>
                 <i class="fa fa-cogs text-warning" aria-hidden="true"></i> 2
             </span>
-            <span>
+                <span>
                 <i class="fa fa-check text-success" aria-hidden="true"></i> 3
             </span>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
