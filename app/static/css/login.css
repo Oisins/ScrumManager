@@ -18,8 +18,8 @@
     height: auto;
     max-height: 80%;
 
-    background-color: #fffc;
-    box-shadow: #0006 0 0 15px 11px;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: rgba(0, 0, 0, 0.4) 0 0 15px 11px;
 }
 
 .logins {
