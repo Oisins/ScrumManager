@@ -20,20 +20,22 @@
 <img class="bg-img" src="/static/img/loginBG.jpg">
 
 <div class="login w-50 p-3 d-flex rounded justify-content-center align-items-center flex-column">
+    <span class="title text-muted">Anmeldung</span>
+    <hr class="w-100">
     <img src="/static/img/logo.png" class="w-25 mb-3">
-    <h3>Bitte Konto auswählen</h3>
+
     <div class="logins mt-1">
         {% for user in users %}
-        <div class="card" style="width: 10rem">
-            <div class="card-body border border-dark bg-secondary text-white rounded">
-                <h4 class="card-title text-center">{{ user.name }}</h4>
-                <h6 class="card-subtitle mb-2 text-white text-center" style="filter: brightness(80%);">
-                    {{ user.rolle}}
-                </h6>
-                <p class="card-text"></p>
-                <a href="/login/{{user.id}}?next={{ next }}" class="btn btn-light" style="width: 100%">Login</a>
+            <div class="card">
+                <div class="card-body border border-dark bg-secondary text-white rounded">
+                    <h4 class="card-title text-center">{{ user.name }}</h4>
+                    <h6 class="card-subtitle mb-2 text-white text-center" style="filter: brightness(80%);">
+                        {{ user.rolle }}
+                    </h6>
+                    <p class="card-text"></p>
+                    <a href="/login/{{ user.id }}?next={{ next }}" class="btn btn-light" style="width: 100%">Login</a>
+                </div>
             </div>
-        </div>
         {% endfor %}
     </div>
 </div>

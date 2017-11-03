@@ -27,6 +27,11 @@ html, body {
     display: flex !important;
 }
 
+.title {
+    margin: -0.5em;
+    font-size: 20px;
+}
+
 .login {
     position: relative;
 
