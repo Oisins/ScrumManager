@@ -1,54 +1,28 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/backlog.css">
+{% endblock %}
 {% block body %}
-<div class="mx-auto" style="width:400px;">
-    <h2 class="font-weight-bold mt-5">Produckt-Backlog</h2>
-</div>
-<div class="card-deck ml-5">
-<div class="card my-5" style="width: 100rem;">
-    <div class="p-3 mb-2 bg-light text-dark">
-    <div class="card-body">
-    <h4 class="card-title">User Story Titel</h4>
-    <p class="card-text">Beschreibung der Anforderungen</p>
-      <ul class="list-group list-group-flush">
-        <h6 class="card-title"> Akzeptanzkriterien:</h6>
-        <li class="list-group-item">• Kriterium 1</li>
-        <li class="list-group-item">• Kriterium 2</li>
-    </ul>
-    <a href="#" class="card-link">Dazugehöriger Sprint</a>
+    <div class="container pt-3" id="container">
+        <div class="title text-center">
+            <h2 class="font-weight-bold m-0">Product-Backlog</h2>
+        </div>
+        {% for i in range(5) %}
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">User Story Titel</h4>
+                    <p class="card-text">Beschreibung der Anforderungen. Lorem ipsum dolor sit amet, consectetur
+                        adipiscing elit. Ut consequat felis felis. Maecenas facilisis, velit dignissim laoreet tempor,
+                        felis augue consectetur justo, nec bibendum dolor neque at erat.</p>
+                    <h6> Akzeptanzkriterien:</h6>
+                    <ul class="list-group">
+                        <li class="list-group-item">• Kriterium 1</li>
+                        <li class="list-group-item">• Kriterium 2</li>
+                    </ul>
+                    <a href="#" class="card-link">Dazugehöriger Sprint</a>
+                </div>
+            </div>
+        {% endfor %}
     </div>
-    </div>
-</div>
-
-<div class="card my-5" style="width: 100rem;">
-    <div class="p-3 mb-2 bg-light text-dark">
-    <div class="card-body">
-        <h4 class="card-title">User Story Titel</h4>
-        <p class="card-text">Beschreibung der Anforderungen</p>
-        <ul class="list-group list-group-flush">
-            <h7 class="card-title"> Aktzeptanzkriterien:</h7>
-            <li class="list-group-item">• Kriterium 1</li>
-            <li class="list-group-item">• Kriterium 2</li>
-            <li class="list-group-item">• Kriterium 3</li>
-        </ul>
-        <a href="#" class="card-link">Dazugehöriger Sprint</a>
-    </div>
-    </div>
-</div>
-
-<div class="card my-5" style="width: 100rem;">
-    <div class="p-3 mb-2 bg-light text-dark">
-    <div class="card-body">
-        <h4 class="card-title">User Story Titel</h4>
-        <p class="card-text">Beschreibung der Anforderungen</p>
-        <ul class="list-group list-group-flush">
-            <h6 class="card-title"> Akzeptanzkriterien:</h6>
-            <li class="list-group-item">• Kriterium 1</li>
-            <li class="list-group-item">• Kriterium 2</li>
-            <li class="list-group-item">• Kriterium 3</li>
-        </ul>
-        <a href="#" class="card-link">Dazugehöriger Sprint</a>
-    </div>
-    </div>
-</div>
-</div>
 {% endblock %}
