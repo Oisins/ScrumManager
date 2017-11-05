@@ -13,30 +13,30 @@
 
     <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/login.css">
     <link rel="shortcut icon" type="image/png" href="/static/img/logo.png">
+
 </head>
 <body>
-<div class="d-flex h-100 flex-column align-items-center justify-content-center">
+<img class="bg-img" src="/static/img/loginBG.jpg">
+
+<div class="login w-50 p-3 d-flex rounded justify-content-center align-items-center flex-column">
+    <span class="title text-muted">Anmeldung</span>
+    <hr class="w-100">
     <img src="/static/img/logo.png" class="w-25 mb-3">
-    <h3>Bitte Konto auswählen</h3>
-    <div class="card-deck">
+
+    <div class="logins mt-1">
         {% for user in users %}
-            <form method="post">
-                <div class="card" style="width: 20rem;">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ user.name }}</h4>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle }}</h6>
-                        <p class="card-text">
-                            ...
-                        </p>
-                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                        <input type="hidden" name="next" value="{{ next }}">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
+            <div class="card">
+                <div class="card-body border border-dark bg-secondary text-white rounded">
+                    <h4 class="card-title text-center">{{ user.name }}</h4>
+                    <h6 class="card-subtitle mb-3 rolle text-center">{{ user.rolle }}</h6>
+                    <a href="/login/{{ user.id }}?next={{ next }}" class="btn btn-light w-100">Login</a>
                 </div>
-            </form>
+            </div>
         {% endfor %}
     </div>
 </div>
+
 </body>
 </html>
