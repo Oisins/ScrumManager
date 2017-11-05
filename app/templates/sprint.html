@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <script src="/static/js/sprint.js"></script>
+{% endblock %}
 
 {% block body %}
     <div class="container mt-3 p-3 bg-white rounded">
@@ -16,14 +20,14 @@
                     <label for="start" class="col-2 col-form-label">Start</label>
                     <div class="col-10">
                         <input class="form-control date-input" id="start" type="text" name="start"
-                               value="2.1.2000">
+                               value="24.10.2017">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="ende" class="col-2 col-form-label">Ende</label>
                     <div class="col-10">
                         <input class="form-control date-input" id="ende" type="text" name="ende"
-                               value="1.1.2000">
+                               value="1.11.2017">
                     </div>
                 </div>
             </form>
@@ -31,18 +35,72 @@
             <table class="table table-bordered mt-4 table-sm" id="taskboard">
                 <thead>
                 <tr>
-                    <th class="text-center">User Story</th>
-                    <th class="text-center">Backlog</th>
-                    <th class="text-center">In bearbeitung</th>
-                    <th class="text-center">Fertig</th>
+                    <th class="text-center w-25">User Story</th>
+                    <th class="text-center w-25">Backlog</th>
+                    <th class="text-center w-25">In bearbeitung</th>
+                    <th class="text-center w-25">Fertig</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
+                    <td>
+                        <button class="float-right btn btn-light edit-story" type="button">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                        <h5 class="story-name">GUI</h5>
+                        <span class="story-beschreibung">Als User möchte ich mit der Software interagieren können</span>
+                    </td>
+                    <td class="task-cell" data-status="0">
+                        <div class="border border-dark rounded p-3 m-2 bg-white task">
+                            <button class="float-right btn btn-link edit-task" type="button">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <span class="task-name">User Seite</span>
+                            <i class="d-block text-muted task-user">Bob</i>
+                        </div>
+                        <div class="border border-dark rounded p-3 m-2 bg-white task">
+                            <button class="float-right btn btn-link edit-task" type="button">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <span class="task-name">Login Seite</span>
+                            <i class="d-block text-muted task-user">John</i>
+                        </div>
+                    </td>
+                    <td class="task-cell" data-status="1"></td>
+                    <td class="task-cell" data-status="2">
+                        <div class="border border-dark rounded p-3 m-2 bg-white task">
+                            <button class="float-right btn btn-link edit-task" type="button">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <span class="task-name">Dashboard</span>
+                            <i class="d-block text-muted task-user">Alice</i>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button class="float-right btn btn-light edit-story" type="button">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                        <h5 class="story-name">Datenbank</h5>
+                        <span class="story-beschreibung">Als User möchte ich dass alles in einer Datenbank gespeichert wird</span>
+                    </td>
+                    <td class="task-cell" data-status="0">
+                        <div class="border border-dark rounded p-3 m-2 bg-white task">
+                            <button class="float-right btn btn-link edit-task" type="button">
+                                <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <span class="task-name">ERM</span>
+                            <i class="d-block text-muted task-user">Bob</i>
+                        </div>
+                    </td>
+                    <td class="task-cell" data-status="1"></td>
+                    <td class="task-cell" data-status="2"></td>
+                </tr>
+                <tr>
                     <td class="text-center">
                         <button class="btn btn-light edit-story" type="button">
                             <i class="fa fa-plus" aria-hidden="true"></i>
-
                         </button>
                     </td>
                     <td colspan="3" class="text-center">

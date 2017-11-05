@@ -1,28 +1,3 @@
 html, body {
     height: 100%;
 }
-
-.navbar {
-
-}
-
-.ui-droppable-hover {
-    background-color: lightgray;
-}
-
-.ui-draggable {
-    cursor: move;
-}
-
-.ui-draggable-dragging {
-    box-shadow: darkgray 5px 5px 5px;
-    z-index: 2;
-}
-
-#taskboard td {
-    width: 25%;
-}
-
-#loadingModal.show {
-    display: flex !important;
-}
