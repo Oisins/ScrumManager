@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block head %}
-{{ super () }}
-<link rel="stylesheet" href="/static/css/users.css">
+    {{ super () }}
+    <link rel="stylesheet" href="/static/css/users.css">
 {% endblock %}
 
 {% block body %}
-    <div id="container" class="container mt-3">
+    <div id="container" class="container my-3">
         <div id="anzahl">
             <span>
                 <i class="fa fa-black-tie" aria-hidden="true"></i> 1
@@ -17,36 +17,38 @@
                 <i class="fa fa-users" aria-hidden="true"></i> 3
             </span>
         </div>
-        <div id="button">
-            <button type="button" class="btn btn-success">Speichern</button>
+        <div id="button" class="p-1">
+            <button type="button" class="btn btn-success btn-block">Speichern</button>
         </div>
         <div id="users">
-            {% for i in range(7) %}
+            {% for i in range(5) %}
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Name {{ i }}</h4>
-                        <p class="card-text">
+                        <div class="my-1">
                             <div>
                                 <i class="fa fa-cogs text-warning" aria-hidden="true"></i> 2
                             </div>
+
                             <div>
                                 <i class="fa fa-check text-success" aria-hidden="true"></i> 3
                             </div>
-                        </p>
-                        <div class="form-group">
+                        </div>
+
+                        <div class="form-group mb-0">
                             <label for="exampleFormControlSelect1">Rolle:</label>
                             <select class="form-control" id="exampleFormControlSelect1">
-                              <option>Master</option>
-                              <option>Team</option>
-                              <option>Owner</option>
+                                <option>Master</option>
+                                <option>Team</option>
+                                <option>Owner</option>
                             </select>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <div id="hinzufügen" class="status p-3">
-            <a class="bth btn-light p-3"><i class="fa fa-plus" aria-hidden="true"></i></a>
+        <div id="hinzufügen" class="status">
+            <a class="bth btn-light p-3"><i class="fa fa-plus d-block" aria-hidden="true"></i></a>
         </div>
     </div>
 {% endblock %}
