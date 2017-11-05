@@ -1,0 +1,26 @@
+/*div {} <div>
+.<class-name> {} -> class="<class-name>"
+#title {} -> id="title"*/
+
+.sprints {
+    display: flex;
+}
+
+.sprint {
+    background-color: white;
+    border: 1px solid #969696;
+}
+
+.dauer {
+    float: right;
+    border: 1px solid darkgrey;
+}
+
+.status {
+    margin: 0 -1rem -1rem -1rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    font-size: 18pt;
+    border-top: 1px solid lightgrey;
+}
