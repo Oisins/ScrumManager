@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block head %}
     {{ super() }}
+    <link rel="stylesheet" href="/static/css/sprint.css">
+
     <script src="/static/js/sprint.js"></script>
+    <script>
+        get_data({{ sprint.id }})
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -20,14 +25,14 @@
                     <label for="start" class="col-2 col-form-label">Start</label>
                     <div class="col-10">
                         <input class="form-control date-input" id="start" type="text" name="start"
-                               value="24.10.2017">
+                               value="2.1.2000">
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="ende" class="col-2 col-form-label">Ende</label>
                     <div class="col-10">
                         <input class="form-control date-input" id="ende" type="text" name="ende"
-                               value="1.11.2017">
+                               value="1.1.2000">
                     </div>
                 </div>
             </form>
@@ -35,71 +40,16 @@
             <table class="table table-bordered mt-4 table-sm" id="taskboard">
                 <thead>
                 <tr>
-                    <th class="text-center w-25">User Story</th>
-                    <th class="text-center w-25">Backlog</th>
-                    <th class="text-center w-25">In bearbeitung</th>
-                    <th class="text-center w-25">Fertig</th>
+                    <th class="text-center">User Story</th>
+                    <th class="text-center">Backlog</th>
+                    <th class="text-center">In bearbeitung</th>
+                    <th class="text-center">Fertig</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>
-                        <button class="float-right btn btn-light edit-story" type="button">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </button>
-                        <h5 class="story-name">GUI</h5>
-                        <span class="story-beschreibung">Als User möchte ich mit der Software interagieren können</span>
-                    </td>
-                    <td class="task-cell" data-status="0">
-                        <div class="border border-dark rounded p-3 m-2 bg-white task">
-                            <button class="float-right btn btn-link edit-task" type="button">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </button>
-                            <span class="task-name">User Seite</span>
-                            <i class="d-block text-muted task-user">Bob</i>
-                        </div>
-                        <div class="border border-dark rounded p-3 m-2 bg-white task">
-                            <button class="float-right btn btn-link edit-task" type="button">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </button>
-                            <span class="task-name">Login Seite</span>
-                            <i class="d-block text-muted task-user">John</i>
-                        </div>
-                    </td>
-                    <td class="task-cell" data-status="1"></td>
-                    <td class="task-cell" data-status="2">
-                        <div class="border border-dark rounded p-3 m-2 bg-white task">
-                            <button class="float-right btn btn-link edit-task" type="button">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </button>
-                            <span class="task-name">Dashboard</span>
-                            <i class="d-block text-muted task-user">Alice</i>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button class="float-right btn btn-light edit-story" type="button">
-                            <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </button>
-                        <h5 class="story-name">Datenbank</h5>
-                        <span class="story-beschreibung">Als User möchte ich dass alles in einer Datenbank gespeichert wird</span>
-                    </td>
-                    <td class="task-cell" data-status="0">
-                        <div class="border border-dark rounded p-3 m-2 bg-white task">
-                            <button class="float-right btn btn-link edit-task" type="button">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </button>
-                            <span class="task-name">ERM</span>
-                            <i class="d-block text-muted task-user">Bob</i>
-                        </div>
-                    </td>
-                    <td class="task-cell" data-status="1"></td>
-                    <td class="task-cell" data-status="2"></td>
-                </tr>
-                <tr>
                     <td class="text-center">
-                        <button class="btn btn-light edit-story" type="button">
+                        <button class="btn btn-light" id="story-create" type="button">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
                     </td>
@@ -117,25 +67,19 @@
         <div class="modal" id="editStoryModal">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <form method="post" action="/sprints/story">
-                        <div class="modal-header">
-                            <h5 class="modal-title">User Story bearbeiten</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                    <div class="modal-header">
+                        <h5 class="modal-title">User Story bearbeiten</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="story-beschreibung">Beschreibung</label>
+                            <input id="story-beschreibung" type="text" class="form-control">
                         </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="beschreibung">Beschreibung</label>
-                                <input id="beschreibung" name="beschreibung" type="text" class="form-control">
-                            </div>
-                            <input type="hidden" name="id" id="id">
-                            <input type="hidden" name="sprint_id" value="1">
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Speichern</button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="story-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
+                        <button id="story-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -146,19 +90,20 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">User Story bearbeiten</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="task-name">Beschreibung</label>
-                            <input id="task-name" name="beschreibung" type="text" class="form-control">
+                            <input id="task-name" class="form-control" name="beschreibung" type="text"
+                                   placeholder="Beschreibung" required>
                         </div>
                         <div class="form-group">
                             <label for="task-user">User</label>
-                            <select class="form-control" id="task-user">
-                                <option value="1">User</option>
+                            <select class="form-control" id="task-user" required>
+                                <option value="-1">Nicht zugewiesen</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>

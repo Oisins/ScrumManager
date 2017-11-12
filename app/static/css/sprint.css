@@ -15,7 +15,7 @@
     z-index: 2;
 }
 
-#taskboard td {
+#taskboard th {
     width: 25%;
 }
 
