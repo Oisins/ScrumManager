@@ -52,33 +52,34 @@ def view_sprint(sprint_id):
     if request.method == "GET":
         return render_template("sprint.html", sprint=sprint, users=User.query.all())
 
-    db.session.autoflush = False
-    try:
-        sprint.start = request.form["start"]
-        sprint.ende = request.form["ende"]
+    sprint.start = request.form.get("start")
+    sprint.ende = request.form.get("ende")
 
-        for story_data in json.loads(request.form["data"]):
-            story = Story.query.get(story_data["id"])
-            if not story:
-                story = Story()
-                story.sprint = sprint
-                db.session.add(story)
+    for story_data in json.loads(request.form.get("data")):
+        story = Story.query.get(story_data.get("id"))
 
-            Task.query.filter_by(story_id=story.id).delete()
-            for task_data in story_data["tasks"]:
-                task = Task()
+        if not story:
+            story = Story()
+            story.sprint = sprint
+            db.session.add(story)
+        elif story_data.get("to_delete", False):
+            db.session.delete(story)
+            continue
 
-                task.story = story
-                task.status = task_data["status"]
-                task.name = task_data["name"]
-                task.user = User.query.get(task_data["user_id"])
+        story.beschreibung = story_data.get("beschreibung")
 
-                story.tasks.append(task)
-                db.session.add(task)
+        Task.query.filter_by(story_id=story.id).delete()
+        for task_data in story_data.get("tasks", []):
+            task = Task()
 
-        db.session.commit()
+            task.story = story
+            task.status = task_data.get("status")
+            task.name = task_data.get("name")
+            task.user = User.query.get(task_data.get("user_id"))
 
-        return redirect(f"/sprints/{sprint_id}")
-    except KeyError as e:
-        raise e
-        return "Error"
+            story.tasks.append(task)
+            db.session.add(task)
+
+    db.session.commit()
+
+    return redirect(f"/sprints/{sprint_id}")

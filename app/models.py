@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from uuid import uuid4
 from . import db
 from flask_login import UserMixin
 from datetime import datetime, date
@@ -37,10 +38,13 @@ class Task(db.Model):
 
 class Story(db.Model):
     __tablename__ = 'Story'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.String(38), primary_key=True)
     beschreibung = db.Column(db.String(500))
     sprint_id = db.Column(db.Integer, db.ForeignKey('Sprint.id'), nullable=False)
     sprint = db.relationship('Sprint', backref=db.backref('stories', lazy=True))
+
+    def __init__(self):
+        self.id = str(uuid4())
 
     def nach_status(self, status):
         return Task.query.filter_by(story_id=self.id, status=status)
