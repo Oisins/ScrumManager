@@ -7,6 +7,19 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+login_manager = LoginManager()
+login_manager.session_protection = "strong"
+login_manager.login_view = "main.login_seite"
+
+erlaubte_routen = ["static", "login"]
+
+
+def ist_erlaubt(route):
+    for erlaubte_route in erlaubte_routen:
+        if erlaubte_route in route:
+            return True
+    return False
+
 
 def create_app(config_name):
     from app import routes
@@ -16,10 +29,19 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
 
     config[config_name].init_app(app)
+    login_manager.init_app(app)
     db.init_app(app)
     db.app = app
     db.create_all()
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
+
+    @app.before_request
+    def check_login():
+        if not current_user.is_authenticated and not ist_erlaubt(request.path):
+            return login_manager.unauthorized()
 
     for blueprint in routes.blueprints:
         app.register_blueprint(blueprint)

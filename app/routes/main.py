@@ -13,30 +13,33 @@ def index():
 
 
 @main_blueprint.route("/login")
-def login():
-    next_url = request.args.get("next", "")
+def login_seite():
+    users = User.query.all()
     if current_user.is_authenticated:
         return redirect("/")
-    return render_template("login.html", users=User.query.all(), next=next_url)
+    return render_template("login.html", users=users, next=request.args.get('next', ''))
 
 
 @main_blueprint.route("/login/<user_id>")
-def user_login(user_id):
+def login(user_id):
     user = User.query.get(user_id)
-    next_url = request.args.get("next", "/")
+    next_url = request.args.get('next', '')
+    if user:
+        login_user(user)
 
-    if not user:
-        return redirect("/login")
+        if next_url:
+            return redirect(next_url)
+        else:
+            return redirect("/")
+    else:
 
-    login_user(user)
-    return redirect(next_url)
+        return "Error"
 
 
 @main_blueprint.route("/logout")
 def logout():
     logout_user()
     return redirect("/login")
-
 
 @main_blueprint.route("/sprints")
 def all_sprints():
