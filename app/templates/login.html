@@ -26,21 +26,12 @@
     <img src="/static/img/logo.png" class="w-25 mb-3">
 
     <div class="logins mt-1">
-        <!--{% for user in users %}
+        {% for user in users %}
             <div class="card">
                 <div class="card-body border border-dark bg-secondary text-white rounded">
                     <h4 class="card-title text-center">{{ user.name }}</h4>
                     <h6 class="card-subtitle mb-3 rolle text-center">{{ user.rolle }}</h6>
                     <a href="/login/{{ user.id }}?next={{ next }}" class="btn btn-light w-100">Login</a>
-                </div>
-            </div>
-        {% endfor %}-->
-        {% for i in range(4) %}
-            <div class="card">
-                <div class="card-body border border-dark bg-secondary text-white rounded">
-                    <h4 class="card-title text-center">User {{ i }}</h4>
-                    <h6 class="card-subtitle mb-3 rolle text-center">Team</h6>
-                    <a href="/" class="btn btn-light w-100">Login</a>
                 </div>
             </div>
         {% endfor %}
