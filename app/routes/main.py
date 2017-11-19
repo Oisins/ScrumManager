@@ -12,6 +12,11 @@ def index():
     return render_template("index.html")
 
 
+@main_blueprint.route("/sprints")
+def sprints_seite():
+    return render_template("sprints.html", sprints=Sprint.query.all())
+
+
 @main_blueprint.route("/login")
 def login_seite():
     users = User.query.all()
@@ -29,17 +34,14 @@ def login(user_id):
 
         if next_url:
             return redirect(next_url)
-        else:
-            return redirect("/")
-    else:
-
-        return "Error"
+    return redirect("/")
 
 
 @main_blueprint.route("/logout")
 def logout():
     logout_user()
     return redirect("/login")
+
 
 @main_blueprint.route("/sprints")
 def all_sprints():
@@ -50,11 +52,13 @@ def all_sprints():
 
 @main_blueprint.route("/sprints/<sprint_id>", methods=["GET", "POST"])
 def view_sprint(sprint_id):
+    db.session.autoflush = False
+
     sprint = Sprint.query.get_or_404(sprint_id)
 
     if request.method == "GET":
         return render_template("sprint.html", sprint=sprint, users=User.query.all())
-
+    
     sprint.start = request.form.get("start")
     sprint.ende = request.form.get("ende")
 

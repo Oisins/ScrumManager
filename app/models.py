@@ -3,6 +3,7 @@ from uuid import uuid4
 from . import db
 from flask_login import UserMixin
 from datetime import datetime, date
+from sqlalchemy import func
 
 
 # Beispiel Tabelle
@@ -93,12 +94,15 @@ class Sprint(db.Model):
         except ValueError:
             self._start = None
 
-    def count_status(self, status):
-        tasks = []
-        for story in self.stories:
-            tasks += story.tasks
-
-        return len([task for task in tasks if task.status == status])
+    def anzahl_status(self, status):
+        return db.session.query(func.count(Task.status), Task.status).group_by(Task.status).filter_by(status=status).first()[0]
+    
+    @property
+    def ist_aktiv(self):
+        if not (self._ende and self._start):
+            return False
+        now = datetime.now().date()
+        return self._start <= now <= self._ende
 
     def status_desc(self):
         if not (self._ende and self._start):
