@@ -72,12 +72,18 @@ class Task {
 
         this.name = $("#task-name").val();
 
-        var user = users[$("#task-user").val()];
-        if (user) {
-            this.user = user;
+        var user_id = $("#task-user").val();
+
+        if (user_id === "-1") {
+            this.user = {id: -1}
+        } else {
+            var user = users[user_id];
+            if (user) {
+                this.user = user;
+            }
         }
 
-        taskboard.update_data();
+        this.update_dom();
     }
 
     remove() {
@@ -98,7 +104,7 @@ class Task {
         var name = this.name ? this.name : "[Kein Name]";
         this.dom.find(".task-name").html(name);
 
-        var user = this.user.name !== -1 ? this.user.name : "Nicht zugewiesen";
+        var user = this.user.id === -1 ? "Nicht zugewiesen" : this.user.name;
         this.dom.find(".task-user").html(user);
     }
 
@@ -281,6 +287,7 @@ class TaskBoard {
         $("#story-create").click(() => {
             var story = new Story();
             story.edit();
+            this.stories.push(story);
         });
         $("#story-save").click(() => editing_story.save());
         $("#story-delete").click(() => editing_story.remove());

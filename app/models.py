@@ -75,7 +75,10 @@ class Sprint(db.Model):
 
     @start.setter
     def start(self, value):
-        self._start = datetime.strptime(value, "%d.%m.%Y").date()
+        try:
+            self._start = datetime.strptime(value, "%d.%m.%Y").date()
+        except ValueError:
+            self._start = None
 
     @property
     def ende(self):
@@ -85,7 +88,10 @@ class Sprint(db.Model):
 
     @ende.setter
     def ende(self, value):
-        self._ende = datetime.strptime(value, "%d.%m.%Y").date()
+        try:
+            self._ende = datetime.strptime(value, "%d.%m.%Y").date()
+        except ValueError:
+            self._start = None
 
     def count_status(self, status):
         tasks = []
