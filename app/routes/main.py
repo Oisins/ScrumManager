@@ -17,6 +17,36 @@ def sprints_seite():
     return render_template("sprints.html", sprints=Sprint.query.all())
 
 
+@main_blueprint.route("/users", methods=["GET", "POST"])
+def users_seite():
+    if request.method == "POST":
+        id = request.form.get("id")
+        print(request.form)
+        delete = request.form.get("delete")
+        if delete:
+            db.session.delete(User.query.get(id))  
+            db.session.commit()
+            return redirect("/users")
+        elif id == "-1":
+            user = User()
+            db.session.add(user)
+        else:
+            user = User.query.get(id)
+            
+        if user:
+            user.rolle = request.form.get("rolle")
+            user.name = request.form.get("name")
+
+            db.session.commit()
+        return redirect("/users")
+        
+    def users_nach_rolle(rolle):
+        return User.query.filter_by(rolle=rolle).all()
+    
+    users = User.query.all() # "SELECT * FROM user;" => [User1, User2, ...]
+    return render_template("users.html", users = users, users_nach_rolle=users_nach_rolle)
+
+
 @main_blueprint.route("/login")
 def login_seite():
     users = User.query.all()

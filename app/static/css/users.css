@@ -1,9 +1,9 @@
 #container {
     display: grid;
-    grid-template-columns: repeat(2, 3fr) 2fr;
-    grid-template-rows: 50px auto 50px;
-
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-rows: 50px repeat(auto-fill, 140px) 50px;
     grid-gap: 1em;
+    height: 100%;
 }
 
 #anzahl {
@@ -11,7 +11,7 @@
     border: 1px solid rgba(0, 0, 0, .125);
 
     grid-column-start: 1;
-    grid-column-end: 3;
+    grid-column-end: -1;
 
     display: flex;
     flex-direction: row;
@@ -20,30 +20,10 @@
     font-size: 16pt;
 }
 
-#button {
-    background-color: white;
-    border: 1px solid rgba(0, 0, 0, .125);
-
-    grid-column-start: 3;
-    grid-column-end: 4;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#users {
-    display: grid;
-
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-gap: 1em;
-    grid-column-start: 1;
-    grid-column-end: 4;
-}
 
 #hinzufügen {
     grid-column-start: 1;
-    grid-column-end: 4;
+    grid-column-end: -1;
 
     /*background-color: white;*/
 

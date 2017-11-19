@@ -12,6 +12,9 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(30))
     rolle = db.Column(db.String(30))
+    
+    def tasks_nach_status(self, status):
+        return Task.query.filter_by(status=status, user_id=self.id).all()
 
     def json(self):
         return {"id": self.id,
