@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from uuid import uuid4
 from . import db
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime, date
 from sqlalchemy import func
 
@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(30))
     rolle = db.Column(db.String(30))
-    
+
     def tasks_nach_status(self, status):
         return Task.query.filter_by(status=status, user_id=self.id).all()
 
@@ -98,8 +98,9 @@ class Sprint(db.Model):
             self._start = None
 
     def anzahl_status(self, status):
-        return db.session.query(func.count(Task.status), Task.status).group_by(Task.status).filter_by(status=status).first()[0]
-    
+        return \
+        db.session.query(func.count(Task.status), Task.status).group_by(Task.status).filter_by(status=status).first()[0]
+
     @property
     def ist_aktiv(self):
         if not (self._ende and self._start):
@@ -123,3 +124,82 @@ class Sprint(db.Model):
         elif self._start <= now <= self._ende:
             remaining = self._ende - now
             return f"Noch {remaining.days} Tag(e)"
+
+
+class Impediment(db.Model):
+    __tablename__ = 'Impediment'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    beschreibung = db.Column(db.String(500), default="")
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+    user = db.relationship('User', backref=db.backref('impediments', lazy=True))
+    prio = db.Column(db.String(30))  # TODO: In INT umwandeln und GET, SETTER für String
+    verantwortlich = db.Column(db.String(30), default="")
+    behandlung = db.Column(db.String(500), default="")
+    _datum = db.Column(db.DateTime)
+
+    def __init__(self):
+        self.datum = datetime.now()
+        self.status = 0
+        self.user = current_user
+
+    @property
+    def datum(self):
+        if not self._datum:
+            return ""
+        return self._datum.strftime('%d.%m.%Y')
+
+    @datum.setter
+    def datum(self, value):
+        try:
+            self._datum = datetime.strptime(value, "%d.%m.%Y").date()
+        except ValueError:
+            self._datum = None
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, wert):
+        s = ImpedimentStatus()
+        s.status = wert
+        self._status.append(s)
+        db.session.add(s)
+        db.session.commit()
+
+    def json(self):
+        # todo
+        return {"id": self.id,
+                "name": self.name,
+                "rolle": self.rolle}
+
+
+class ImpedimentStatus(db.Model):
+    __tablename__ = 'ImpedimentStatus'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    impediment_id = db.Column(db.Integer, db.ForeignKey('Impediment.id'))
+    impediment = db.relationship('Impediment', backref=db.backref('_status', lazy=True))
+    status = db.Column(db.Integer)
+    _datum = db.Column(db.DateTime)
+
+    def __init__(self):
+        self._datum = datetime.now()
+
+    @property
+    def datum(self):
+        if self._datum:
+            return self._datum.strftime('%d.%m.%Y')
+        return ""
+
+    @datum.setter
+    def datum(self, value):
+        try:
+            self._datum = datetime.strptime(value, "%d.%m.%Y").date()
+        except ValueError:
+            self._datum = None
+
+    def json(self):
+        # todo
+        return {"id": self.id,
+                "name": self.name,
+                "rolle": self.rolle}

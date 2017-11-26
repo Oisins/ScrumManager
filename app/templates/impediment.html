@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/impediment.css">
+{% endblock %}
+
+{% block body %}
+    <div class="container my-3 p-3 bg-white">
+        <table class="table table-bordered mt-4 mb-0 table-sm" id="taskboard">
+            <thead>
+            <tr>
+                <th class="text-center">Impediment</th>
+                <th class="text-center">Ersteller</th>
+                <th class="text-center">Datum</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Priorität</th>
+                <th class="text-center">Verantwortlich</th>
+                <th class="text-center">Behandlung</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for impediment in impediments %}
+                <tr>
+                    <td>{{ impediment.beschreibung }}</td>
+                    <td>{% if impediment.user %}{{ impediment.user.name }}{% else %}Nicht zugewiesen{% endif %}</td>
+                    <td colspan="2">
+                        {% for status in impediment.status %}
+                            {{ status.datum }} - {{ status.status }}<br>
+                        {% endfor %}
+                    </td>
+                    <td>{{ impediment.prio }}</td>
+                    <td>{{ impediment.verantwortlich }}</td>
+                    <td>{{ impediment.behandlung }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="7" class="text-center">
+                    <button class="btn btn-light" id="task-create" type="button">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- EDIT STORY -->
+        <div class="modal" id="editStoryModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">User Story bearbeiten</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="story-beschreibung">Beschreibung</label>
+                            <input id="story-beschreibung" type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="story-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
+                        <button id="story-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EDIT TASK -->
+        <div class="modal" id="editTaskModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Task bearbeiten</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="task-name">Beschreibung</label>
+                            <input id="task-name" class="form-control" name="beschreibung" type="text"
+                                   placeholder="Beschreibung">
+                        </div>
+                        <div class="form-group">
+                            <label for="task-user">User</label>
+                            <select class="form-control" id="task-user">
+                                <option value="-1">Nicht zugewiesen</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="task-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
+                        <button id="task-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal align-items-center justify-content-center" id="loadingModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content p-5">
+                    <div class="modal-body">
+                        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                        <div class="text-muted text-center">Lädt...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

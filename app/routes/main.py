@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from flask import Blueprint, render_template, redirect, request
-from app.models import db, User, Sprint, Story, Task
+from app.models import db, User, Sprint, Story, Task, Impediment
 from flask_login import login_user, logout_user, current_user
 
 main_blueprint = Blueprint('main', __name__)
@@ -120,3 +120,10 @@ def view_sprint(sprint_id):
     db.session.commit()
 
     return redirect(f"/sprints/{sprint_id}")
+
+
+@main_blueprint.route("/impediment")
+def view_impediment():
+    impediment = Impediment.query.all()
+
+    return render_template("impediment.html", impediments=impediment)
