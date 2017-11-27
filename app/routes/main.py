@@ -8,8 +8,8 @@ main_blueprint = Blueprint('main', __name__)
 
 
 @main_blueprint.route("/")
-def index():
-    return render_template("index.html")
+def view_index():
+    return render_template("dashboard.html")
 
 
 @main_blueprint.route("/sprints")
@@ -17,34 +17,39 @@ def sprints_seite():
     return render_template("sprints.html", sprints=Sprint.query.all())
 
 
+@main_blueprint.route("/backlog")
+def view_backlog():
+    return render_template("backlog.html")
+
+
 @main_blueprint.route("/users", methods=["GET", "POST"])
 def users_seite():
     if request.method == "POST":
-        id = request.form.get("id")
+        user_id = request.form.get("id")
         print(request.form)
         delete = request.form.get("delete")
         if delete:
-            db.session.delete(User.query.get(id))  
+            db.session.delete(User.query.get(user_id))
             db.session.commit()
             return redirect("/users")
-        elif id == "-1":
+        elif user_id == "-1":
             user = User()
             db.session.add(user)
         else:
-            user = User.query.get(id)
-            
+            user = User.query.get(user_id)
+
         if user:
             user.rolle = request.form.get("rolle")
             user.name = request.form.get("name")
 
             db.session.commit()
         return redirect("/users")
-        
+
     def users_nach_rolle(rolle):
         return User.query.filter_by(rolle=rolle).all()
-    
-    users = User.query.all() # "SELECT * FROM user;" => [User1, User2, ...]
-    return render_template("users.html", users = users, users_nach_rolle=users_nach_rolle)
+
+    users = User.query.all()  # "SELECT * FROM user;" => [User1, User2, ...]
+    return render_template("users.html", users=users, users_nach_rolle=users_nach_rolle)
 
 
 @main_blueprint.route("/login")
@@ -88,7 +93,7 @@ def view_sprint(sprint_id):
 
     if request.method == "GET":
         return render_template("sprint.html", sprint=sprint, users=User.query.all())
-    
+
     sprint.start = request.form.get("start")
     sprint.ende = request.form.get("ende")
 
