@@ -1,11 +1,57 @@
 {% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+    <script>
+        $(function () {
+            $.getJSON("/api/burndown/1").done(function (data) {
+                var datapoints = [];
+                var lables = [];
+                for (var datapoint of data) {
+                    datapoints.push(new Date(datapoint[1]));
+                    lables.push(datapoint[0]);
+                }
+                var ctx = document.getElementById("chartContainer").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: lables,
+                        datasets: [
+                            {
+                                data: datapoints,
+                                label: "Echt",
+                                fill: false,
+                                borderColor: "#14ff00"
+                            },
+                            {
+                                data: [{x: lables[0], y: 6}, {x: lables[lables.length - 1], y: 0}],
+                                label: "Erwartet",
+                                fill: false,
+                                borderColor: "#4e4e4e"
+                            }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+
+                                }
+                            }]
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
 {% block body %}
     <div class="container p-3">
         <div class="card mb-3">
             <div class="card-body d-flex align-items-center justify-content-between">
             <span class="d-flex align-items-center">
                 <i class="fa fa-user fa-3x m-1" aria-hidden="true"></i>
-                Willkommen USER
+                Willkommen {{ current_user.name }}
             </span>
 
                 <span>
@@ -22,7 +68,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="card-title">Burndown Chart</div>
-                    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+                    <canvas id="chartContainer" style="height: 370px; width: 100%;"></canvas>
                 </div>
             </div>
         </div>

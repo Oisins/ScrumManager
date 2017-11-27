@@ -116,6 +116,8 @@ def view_sprint(sprint_id):
 
             task.story = story
             task.status = task_data.get("status")
+            if task.status == 2:
+                task.fertig()
             task.name = task_data.get("name")
             task.user = User.query.get(task_data.get("user_id"))
 
