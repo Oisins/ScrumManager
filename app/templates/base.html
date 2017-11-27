@@ -1,14 +1,16 @@
+{% macro link(url, text) %}
+    <li class="nav-item">
+        <a class="nav-link {% if request.path == url %}active{% endif %}" href="{{ url }}">
+            {{ text }}
+        </a>
+    </li>
+{%- endmacro %}
+
 <!DOCTYPE html>
 <html>
 <head>
     {% block head %}
         <title>Scrum Manager</title>
-
-        <script src="/static/js/jquery-3.2.1.min.js"></script>
-        <script src="/static/js/popper.min.js"></script>
-        <script src="/static/js/bootstrap.min.js"></script>
-        <script src="/static/js/jquery-ui.min.js"></script>
-        <script src="/static/js/canvasjs.min.js"></script>
 
         <link rel="stylesheet" href="/static/css/bootstrap.min.css">
         <link rel="stylesheet" href="/static/css/theme.css">
@@ -17,8 +19,13 @@
         <link rel="stylesheet" href="/static/css/jquery-ui.min.css">
         <link rel="stylesheet" href="/static/css/font-awesome.min.css">
 
-        <link rel="shortcut icon" type="image/png" href="/static/img/scrum-logo.png">
+        <script src="/static/js/jquery-3.2.1.min.js"></script>
+        <script src="/static/js/popper.min.js"></script>
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/static/js/jquery-ui.min.js"></script>
+        <script src="/static/js/canvasjs.min.js"></script>
 
+        <link rel="shortcut icon" type="image/png" href="/static/img/scrum-logo.png">
     {% endblock %}
 </head>
 <body>
@@ -34,26 +41,17 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="/dev/backlog">Backlog</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/sprints">Sprints</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/dev/sprint">Sprint</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/users">Users</a>
-            </li>
+            {{ link("/", "Dashboard") }}
+            {{ link("/backlog", "Backlog") }}
+            {{ link("/sprints", "Sprints") }}
+            {{ link("/impediment", "Impediments") }}
+            {{ link("/users", "Users") }}
         </ul>
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="/logout">Logout {{ current_user.name }}</a>
-            </li>
+            {{ link("/logout", "Logout " + current_user.name) }}
         </ul>
     </div>
 </nav>
-    {% block body %}{% endblock %}
+{% block body %}{% endblock %}
 </body>
 </html>
