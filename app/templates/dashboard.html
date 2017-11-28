@@ -9,7 +9,13 @@
 
     <script>
         $(function () {
-            $.getJSON("/api/burndown/1").done(function (data) {
+            $.getJSON("/api/burndown/{{ aktiver_sprint.id }}").done(function (data) {
+                var chart_container = $("#chartContainer");
+                if(data.error){
+                    chart_container.remove();
+                    $("#chartError").html("Chart konnte nicht erstellt werden: <br>" + data.error);
+                    return;
+                }
 
                 var start = new Date(data.start);
                 var ende = new Date(data.ende);
@@ -21,7 +27,7 @@
                     };
                 });
 
-                var ctx = document.getElementById("chartContainer").getContext('2d');
+                var ctx = chart_container.get(0).getContext('2d');
                 var myChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -98,7 +104,9 @@
                     <div class="card mb-2">
                         <div class="card-body">
                             {{ task.name }}
-                            <span class="float-right">
+                            <span class="float-right text-center">
+                                <span class="text-muted small">Status</span>
+                                <br>
                                 {% if task.status == 0 %}
                                     <i class="fa fa-list text-danger" aria-hidden="true"></i>
                                 {% elif task.status == 1 %}
@@ -116,6 +124,7 @@
             <div class="card-body">
                 <div class="card-title">Burndown Chart</div>
                 <canvas id="chartContainer" style="height: 420px; width: 100%;"></canvas>
+                <div id="chartError" class="text-center"></div>
             </div>
         </div>
     </div>
