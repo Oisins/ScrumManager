@@ -1,15 +1,11 @@
 #container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    grid-template-rows: 50px repeat(auto-fill, 140px) 50px;
+    grid-template-rows: 50px repeat(auto-fill, 140px);
     grid-gap: 1em;
-    min-height: 100%;
 }
 
 #anzahl {
-    background-color: white;
-    border: 1px solid rgba(0, 0, 0, .125);
-
     grid-column-start: 1;
     grid-column-end: -1;
 

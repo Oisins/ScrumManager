@@ -10,31 +10,31 @@
                 var name = button.data('name');
                 var rolle = button.data('rolle');
                 var id = button.data('id');
-                
+
                 modal = $(this);
-                
+
                 modal.find('#idInput').val(id);
-                if(id === -1){
+                if (id === -1) {
                     modal.find('#delete').hide();
                     modal.find('.modal-title').text("Neuer Nutzer");
-                }else{
+                } else {
                     modal.find('#delete').show();
                     modal.find('.modal-title').text('Bearbeiten: ' + name);
                     modal.find('#nameInput').val(name);
                     modal.find('#rolleSelect').val(rolle);
                 }
             });
-            $('#delete').click(()=>{
+            $('#delete').click(() => {
                 modal.find('#deleteInput').val("True");
                 modal.find('button[type=submit]').click();
             });
         });
-</script>
+    </script>
 {% endblock %}
 
 {% block body %}
     <div id="container" class="container my-3">
-        <div id="anzahl">
+        <div class="panel" id="anzahl">
             <span>
                 <i class="fa fa-black-tie" aria-hidden="true"></i> 
                 {{ users_nach_rolle("owner") | length }}
@@ -49,28 +49,26 @@
             </span>
         </div>
         {% for user in users %}
-            <div class="card">
-                <div class="card-body">
-                    <button class="btn btn-light float-right" type="button" 
-                            data-target="#bearbeitenModal"
-                            data-toggle="modal"
-                            data-id="{{ user.id }}"
-                            data-name="{{ user.name}}"
-                            data-rolle="{{ user.rolle }}">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
-                    <h4 class="card-title">{{ user.name }}</h4>
-                         <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle | title }}</h6>
-                    <div class="my-1">
-                        <div>
-                            <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
-                            {{ user.tasks_nach_status(1) | length }}
-                        </div>
+            <div class="panel">
+                <button class="btn btn-light float-right" type="button"
+                        data-target="#bearbeitenModal"
+                        data-toggle="modal"
+                        data-id="{{ user.id }}"
+                        data-name="{{ user.name }}"
+                        data-rolle="{{ user.rolle }}">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+                <h4 class="card-title">{{ user.name }}</h4>
+                <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle | title }}</h6>
+                <div class="my-1">
+                    <div>
+                        <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
+                        {{ user.tasks_nach_status(1) | length }}
+                    </div>
 
-                        <div>
-                            <i class="fa fa-check text-success" aria-hidden="true"></i>
-                            {{ user.tasks_nach_status(2) | length }}
-                        </div>
+                    <div>
+                        <i class="fa fa-check text-success" aria-hidden="true"></i>
+                        {{ user.tasks_nach_status(2) | length }}
                     </div>
                 </div>
             </div>
@@ -82,38 +80,38 @@
         </div>
     </div>
     <div class="modal" tabindex="-1" role="dialog" id="bearbeitenModal">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form method="post">
-                <input type="hidden" class="form-control" id="idInput" name="id">
-                <input type="hidden" class="form-control" id="deleteInput" name="delete" value="">
-                <div class="modal-header">
-                    <h5 class="modal-title">Nutzerbearbeitung</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                      <div class="form-group">
-                          <label for="nameInput">Name</label>
-                          <input type="text" class="form-control" id="nameInput" name="name" placeholder="Name">
-                      </div>
-                      <div class="form-group mb-0">
-                        <label for="rolleSelect">Rolle:</label>
-                        <select class="form-control" id="rolleSelect" name="rolle">
-                            <option value="owner">Owner</option>
-                            <option value="master">Master</option>
-                            <option value="team">Team</option>
-                        </select>
-                      </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="delete" class="btn btn-danger mr-auto">Löschen</button>
-                    <button type="submit" class="btn btn-primary">Speichern</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </form>
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form method="post">
+                    <input type="hidden" class="form-control" id="idInput" name="id">
+                    <input type="hidden" class="form-control" id="deleteInput" name="delete" value="">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Nutzerbearbeitung</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nameInput">Name</label>
+                            <input type="text" class="form-control" id="nameInput" name="name" placeholder="Name">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label for="rolleSelect">Rolle:</label>
+                            <select class="form-control" id="rolleSelect" name="rolle">
+                                <option value="owner">Owner</option>
+                                <option value="master">Master</option>
+                                <option value="team">Team</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="delete" class="btn btn-danger mr-auto">Löschen</button>
+                        <button type="submit" class="btn btn-primary">Speichern</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
 {% endblock %}
