@@ -1,3 +1,17 @@
 html, body {
     height: 100%;
 }
+
+/*
+    Komponenten
+ */
+.panel {
+    border: 1px solid var(--border-light);
+    background-color: #FFF;
+    padding: 1rem;
+}
+
+.panel-titel {
+    font-size: 16pt;
+    margin-bottom: 0.5rem;
+}
