@@ -66,32 +66,6 @@ def users_seite():
     return render_template("users.html", users=users, users_nach_rolle=users_nach_rolle)
 
 
-@main_blueprint.route("/login")
-def login_seite():
-    users = User.query.all()
-    if current_user.is_authenticated:
-        return redirect("/")
-    return render_template("login.html", users=users, next=request.args.get('next', ''))
-
-
-@main_blueprint.route("/login/<user_id>")
-def login(user_id):
-    user = User.query.get(user_id)
-    next_url = request.args.get('next', '')
-    if user:
-        login_user(user)
-
-        if next_url:
-            return redirect(next_url)
-    return redirect("/")
-
-
-@main_blueprint.route("/logout")
-def logout():
-    logout_user()
-    return redirect("/login")
-
-
 @main_blueprint.route("/sprints")
 def all_sprints():
     sprints = Sprint.query.all()
