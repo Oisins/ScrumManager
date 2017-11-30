@@ -1,29 +1,135 @@
 {% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+
+    {% if aktiver_sprint %}
+        <script src="/static/js/moment.min.js"></script>
+        <script src="/static/js/Chart.min.js"></script>
+        <script>
+            $(function () {
+                $.getJSON("/api/burndown/{{ aktiver_sprint.id }}").done(function (data) {
+                    var chart_container = $("#chartContainer");
+                    if (data.error) {
+                        chart_container.remove();
+                        $("#chartError").html("Chart konnte nicht erstellt werden: <br>" + data.error);
+                        return;
+                    }
+
+                    var start = new Date(data.start);
+                    var ende = new Date(data.ende);
+                    var anzahl = data.anzahl;
+                    var datapoints = data.data.map(point => {
+                        return {
+                            t: new Date(point[0]),  // Datum
+                            y: point[1]             // Wert
+                        };
+                    });
+
+                    var ctx = chart_container.get(0).getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [
+                                {
+                                    data: datapoints,
+                                    label: "Echt",
+                                    fill: false,
+                                    borderColor: "#14ff00"
+                                },
+                                {
+                                    data: [{t: start, y: anzahl}, {t: ende, y: 0}],
+                                    label: "Erwartet",
+                                    fill: false,
+                                    borderColor: "#4e4e4e"
+                                }
+                            ]
+                        },
+                        options: {
+                            animation: {
+                                duration: 500
+                            },
+                            scales: {
+                                xAxes: [{
+                                    type: "time",
+                                    distribution: "linear",
+                                    display: true,
+                                    time: {
+                                        unit: 'day',
+                                        tooltipFormat: "ddd DD.MM.YYYY",
+                                        displayFormats: {
+                                            day: 'DD.MM'
+                                        }
+                                    },
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: "Datum"
+                                    }
+                                }],
+                                yAxes: [{
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: "Unfertige Tasks"
+                                    },
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+    {% endif %}
+{% endblock %}
 {% block body %}
-    <div class="container p-3">
-        <div class="card mb-3">
+    <div class="container p-3" id="grid-container">
+        <div class="card" id="top-bar">
             <div class="card-body d-flex align-items-center justify-content-between">
-            <span class="d-flex align-items-center">
-                <i class="fa fa-user fa-3x m-1" aria-hidden="true"></i>
-                Willkommen USER
-            </span>
+                <span class="d-flex align-items-center">
+                    <i class="fa fa-user fa-3x m-1" aria-hidden="true"></i>
+                    Willkommen {{ current_user.name }}
+                </span>
 
                 <span>
-                Meine Tasks: 1
-            </span>
+                    Meine Tasks: {{ tasks | length }}
+                </span>
             </div>
         </div>
-        <div class="card-deck">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title">Mein Team</div>
-                </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">Meine Tasks</div>
+                {% for task in tasks %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            {{ task.name }}
+                            <span class="float-right text-center">
+                                <span class="text-muted small">Status</span>
+                                <br>
+                                {% if task.status == 0 %}
+                                    <i class="fa fa-list text-danger" aria-hidden="true"></i>
+                                {% elif task.status == 1 %}
+                                    <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
+                                {% elif task.status == 2 %}
+                                    <i class="fa fa-check text-success" aria-hidden="true"></i>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        Keine Tasks
+                    </div>
+                {% endfor %}
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title">Burndown Chart</div>
-                    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-                </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">Burndown Chart</div>
+                <canvas id="chartContainer" style="height: 420px; width: 100%;"></canvas>
+                <div id="chartError" class="text-center"></div>
             </div>
         </div>
     </div>

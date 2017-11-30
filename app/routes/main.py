@@ -9,7 +9,21 @@ main_blueprint = Blueprint('main', __name__)
 
 @main_blueprint.route("/")
 def view_index():
-    return render_template("dashboard.html")
+    tasks = []
+    aktiver_sprint = None
+    for sprint in Sprint.query.all():
+        if sprint.ist_aktiv:
+            tasks = sprint.get_tasks()
+            aktiver_sprint = sprint
+    else:
+        # Kein aktiver Sprint
+        # TODO Burndown chart verstecken
+        pass
+
+    tasks = [task for task in tasks if task.user == current_user]
+    tasks.sort(key=lambda task: task.status)
+
+    return render_template("dashboard.html", tasks=tasks, aktiver_sprint=aktiver_sprint)
 
 
 @main_blueprint.route("/sprints")
@@ -116,6 +130,8 @@ def view_sprint(sprint_id):
 
             task.story = story
             task.status = task_data.get("status")
+            if task.status == 2:
+                task.fertig()
             task.name = task_data.get("name")
             task.user = User.query.get(task_data.get("user_id"))
 
