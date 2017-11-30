@@ -2,7 +2,7 @@
 class Config(object):
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite://:memory:'
+    SQLALCHEMY_DATABASE_URI = "sqlite://"  # In Memory
     SECRET_KEY = "GEHEIMER SCHLÜSSEL"
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
@@ -20,9 +20,14 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
 
 
-config = {
-    'development': DevelopmentConfig,
-    'production': ProductionConfig,
+class TestingConfig(Config):
+    TESTING = True
 
-    'default': DevelopmentConfig
+
+config = {
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "testing": TestingConfig,
+
+    "default": DevelopmentConfig
 }
