@@ -9,7 +9,7 @@ db = SQLAlchemy()
 
 login_manager = LoginManager()
 login_manager.session_protection = "strong"
-login_manager.login_view = "main.login_seite"
+login_manager.login_view = "login.login_seite"
 
 erlaubte_routen = ["static", "login"]
 

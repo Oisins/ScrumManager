@@ -17,13 +17,11 @@ def login_seite():
 @login_blueprint.route("/login/<user_id>")
 def login(user_id):
     user = User.query.get(user_id)
-    next_url = request.args.get('next', '')
+    next_url = request.args.get('next', '/')
     if user:
         login_user(user)
 
-        if next_url:
-            return redirect(next_url)
-    return redirect("/")
+    return redirect(next_url)
 
 
 @login_blueprint.route("/logout")
