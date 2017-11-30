@@ -2,7 +2,7 @@
 from uuid import uuid4
 from . import db
 from flask_login import UserMixin, current_user
-from datetime import datetime, date
+from datetime import datetime
 from sqlalchemy import func
 
 

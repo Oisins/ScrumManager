@@ -4,84 +4,85 @@
     {{ super() }}
     <link rel="stylesheet" href="/static/css/dashboard.css">
 
-    <script src="/static/js/moment.min.js"></script>
-    <script src="/static/js/Chart.min.js"></script>
-
-    <script>
-        $(function () {
-            $.getJSON("/api/burndown/{{ aktiver_sprint.id }}").done(function (data) {
-                var chart_container = $("#chartContainer");
-                if(data.error){
-                    chart_container.remove();
-                    $("#chartError").html("Chart konnte nicht erstellt werden: <br>" + data.error);
-                    return;
-                }
-
-                var start = new Date(data.start);
-                var ende = new Date(data.ende);
-                var anzahl = data.anzahl;
-                var datapoints = data.data.map(point => {
-                    return {
-                        t: new Date(point[0]),  // Datum
-                        y: point[1]             // Wert
-                    };
-                });
-
-                var ctx = chart_container.get(0).getContext('2d');
-                var myChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        datasets: [
-                            {
-                                data: datapoints,
-                                label: "Echt",
-                                fill: false,
-                                borderColor: "#14ff00"
-                            },
-                            {
-                                data: [{t: start, y: anzahl}, {t: ende, y: 0}],
-                                label: "Erwartet",
-                                fill: false,
-                                borderColor: "#4e4e4e"
-                            }
-                        ]
-                    },
-                    options: {
-                        animation: {
-                            duration: 500
-                        },
-                        scales: {
-                            xAxes: [{
-                                type: "time",
-                                distribution: "linear",
-                                display: true,
-                                time: {
-                                    unit: 'day',
-                                    tooltipFormat: "ddd DD.MM.YYYY",
-                                    displayFormats: {
-                                        day: 'DD.MM'
-                                    }
-                                },
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: "Datum"
-                                }
-                            }],
-                            yAxes: [{
-                                scaleLabel: {
-                                    display: true,
-                                    labelString: "Unfertige Tasks"
-                                },
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
+    {% if aktiver_sprint %}
+        <script src="/static/js/moment.min.js"></script>
+        <script src="/static/js/Chart.min.js"></script>
+        <script>
+            $(function () {
+                $.getJSON("/api/burndown/{{ aktiver_sprint.id }}").done(function (data) {
+                    var chart_container = $("#chartContainer");
+                    if (data.error) {
+                        chart_container.remove();
+                        $("#chartError").html("Chart konnte nicht erstellt werden: <br>" + data.error);
+                        return;
                     }
+
+                    var start = new Date(data.start);
+                    var ende = new Date(data.ende);
+                    var anzahl = data.anzahl;
+                    var datapoints = data.data.map(point => {
+                        return {
+                            t: new Date(point[0]),  // Datum
+                            y: point[1]             // Wert
+                        };
+                    });
+
+                    var ctx = chart_container.get(0).getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            datasets: [
+                                {
+                                    data: datapoints,
+                                    label: "Echt",
+                                    fill: false,
+                                    borderColor: "#14ff00"
+                                },
+                                {
+                                    data: [{t: start, y: anzahl}, {t: ende, y: 0}],
+                                    label: "Erwartet",
+                                    fill: false,
+                                    borderColor: "#4e4e4e"
+                                }
+                            ]
+                        },
+                        options: {
+                            animation: {
+                                duration: 500
+                            },
+                            scales: {
+                                xAxes: [{
+                                    type: "time",
+                                    distribution: "linear",
+                                    display: true,
+                                    time: {
+                                        unit: 'day',
+                                        tooltipFormat: "ddd DD.MM.YYYY",
+                                        displayFormats: {
+                                            day: 'DD.MM'
+                                        }
+                                    },
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: "Datum"
+                                    }
+                                }],
+                                yAxes: [{
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: "Unfertige Tasks"
+                                    },
+                                    ticks: {
+                                        beginAtZero: true
+                                    }
+                                }]
+                            }
+                        }
+                    });
                 });
             });
-        });
-    </script>
+        </script>
+    {% endif %}
 {% endblock %}
 {% block body %}
     <div class="container p-3" id="grid-container">
@@ -116,6 +117,10 @@
                                 {% endif %}
                             </span>
                         </div>
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted">
+                        Keine Tasks
                     </div>
                 {% endfor %}
             </div>

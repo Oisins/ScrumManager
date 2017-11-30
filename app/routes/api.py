@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, jsonify
 from app.models import Task, User, Story, Sprint
-from datetime import datetime, timedelta
 
 api_blueprint = Blueprint('api', __name__, url_prefix="/api")
 
@@ -33,6 +32,8 @@ def get_sprint(s_id):
 @api_blueprint.route("/burndown/<s_id>")
 def burndown_data(s_id):
     sprint = Sprint.query.get(s_id)
+    if not sprint:
+        return jsonify({"error": "Sprint nicht gefunden"})
     tasks = sprint.get_tasks()
     tasks.sort(key=lambda x: x.fertig_datum)
 
