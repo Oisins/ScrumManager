@@ -86,51 +86,45 @@
 {% endblock %}
 {% block body %}
     <div class="container p-3" id="grid-container">
-        <div class="card" id="top-bar">
-            <div class="card-body d-flex align-items-center justify-content-between">
-                <span class="d-flex align-items-center">
-                    <i class="fa fa-user fa-3x m-1" aria-hidden="true"></i>
-                    Willkommen {{ current_user.name }}
-                </span>
+        <div class="panel d-flex align-items-center justify-content-between" id="top-bar">
+            <span class="d-flex align-items-center">
+                <i class="fa fa-user fa-3x m-1" aria-hidden="true"></i>
+                Willkommen {{ current_user.name }}
+            </span>
 
-                <span>
-                    Meine Tasks: {{ tasks | length }}
-                </span>
-            </div>
+            <span>
+                Meine Tasks: {{ tasks | length }}
+            </span>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Meine Tasks</div>
-                {% for task in tasks %}
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            {{ task.name }}
-                            <span class="float-right text-center">
+        <div class="panel">
+            <div class="panel-titel">Meine Tasks</div>
+            {% for task in tasks %}
+                <div class="card mb-2">
+                    <div class="card-body">
+                        {{ task.name }}
+                        <span class="float-right text-center">
                                 <span class="text-muted small">Status</span>
                                 <br>
-                                {% if task.status == 0 %}
-                                    <i class="fa fa-list text-danger" aria-hidden="true"></i>
-                                {% elif task.status == 1 %}
-                                    <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
-                                {% elif task.status == 2 %}
-                                    <i class="fa fa-check text-success" aria-hidden="true"></i>
-                                {% endif %}
+                            {% if task.status == 0 %}
+                                <i class="fa fa-list text-danger" aria-hidden="true"></i>
+                            {% elif task.status == 1 %}
+                                <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
+                            {% elif task.status == 2 %}
+                                <i class="fa fa-check text-success" aria-hidden="true"></i>
+                            {% endif %}
                             </span>
-                        </div>
                     </div>
-                {% else %}
-                    <div class="text-center text-muted">
-                        Keine Tasks
-                    </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% else %}
+                <div class="text-center text-muted">
+                    Keine Tasks
+                </div>
+            {% endfor %}
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Burndown Chart</div>
-                <canvas id="chartContainer" style="height: 420px; width: 100%;"></canvas>
-                <div id="chartError" class="text-center"></div>
-            </div>
+        <div class="panel">
+            <div class="panel-titel">Burndown Chart</div>
+            <canvas id="chartContainer" style="height: 420px; width: 100%;"></canvas>
+            <div id="chartError" class="text-center"></div>
         </div>
     </div>
 {% endblock %}
