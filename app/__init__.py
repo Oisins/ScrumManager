@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from flask_login import LoginManager, current_user
 from config import config
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +11,7 @@ login_manager = LoginManager()
 login_manager.session_protection = "strong"
 login_manager.login_view = "login.login_seite"
 
-erlaubte_routen = ["static", "login"]
+erlaubte_routen = ["static", "login", "api/newuser"]
 
 
 def ist_erlaubt(route):
@@ -23,7 +23,7 @@ def ist_erlaubt(route):
 
 def create_app(config_name):
     from app import routes
-    from app.models import User
+    from app.models import User, Sprint
 
     app = Flask(__name__)
     app.config.from_object(config[config_name])
@@ -45,7 +45,16 @@ def create_app(config_name):
 
     @app.errorhandler(404)
     def page_not_found(e):
+        if not current_user.is_authenticated:
+            return redirect("/"), 403
         return render_template('404.html'), 404
+
+    @app.context_processor
+    def utility_processor():
+        def get_aktiver_sprint():
+            return Sprint.get_aktiv()
+
+        return dict(get_aktiver_sprint=get_aktiver_sprint)
 
     for blueprint in routes.blueprints:
         app.register_blueprint(blueprint)
