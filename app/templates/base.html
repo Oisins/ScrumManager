@@ -28,29 +28,31 @@
     {% endblock %}
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <a class="navbar-brand" href="/">
-        <img src="/static/img/logo-quadratisch.png" width="30" height="30" class="d-inline-block align-top">
-        Scrum Manager
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="/">
+            <img src="/static/img/logo-quadratisch.png" width="30" height="30" class="d-inline-block align-top">
+            Scrum Manager
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            {{ link("/", "Dashboard") }}
-            {{ link("/backlog", "Backlog") }}
-            {{ link("/sprints", "Sprints") }}
-            {{ link("/impediment", "Impediments") }}
-            {{ link("/users", "Users") }}
-        </ul>
-        <ul class="navbar-nav">
-            {{ link("/logout", "Logout " + current_user.name) }}
-        </ul>
-    </div>
-</nav>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                {{ link("/", "Dashboard") }}
+                {{ link("/backlog", "Backlog") }}
+                {{ link("/sprints", "Sprints") }}
+                {{ link("/impediment", "Impediments") }}
+                {{ link("/users", "Users") }}
+            </ul>
+            <ul class="navbar-nav">
+                {{ link("/logout", "Logout " + current_user.name) }}
+            </ul>
+        </div>
+    </nav>
+{% endblock %}
 {% block body %}{% endblock %}
 </body>
 </html>
