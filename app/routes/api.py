@@ -1,20 +1,31 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, jsonify
-from app.models import Task, User, Story, Sprint
+from flask import Blueprint, jsonify, redirect
+from app.models import Task, User, Story, Sprint, db
 
 api_blueprint = Blueprint('api', __name__, url_prefix="/api")
 
 
 @api_blueprint.route("/tasks")
-def get_tasks():
+def api_get_tasks():
     tasks = Task.query.all()
     return jsonify([task.json() for task in tasks])
 
 
 @api_blueprint.route("/users")
-def get_users():
+def api_get_users():
     users = User.query.all()
     return jsonify([user.json() for user in users])
+
+
+@api_blueprint.route("/newuser", methods=["POST"])
+def api_new_user():
+    user = User()
+    user.name = "Neuer Nutzer"
+    user.rolle = "Owner"
+    db.session.add(user)
+    db.session.commit()
+
+    return redirect("/")
 
 
 @api_blueprint.route("/stories")

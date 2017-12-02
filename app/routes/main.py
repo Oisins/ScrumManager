@@ -2,13 +2,13 @@
 import json
 from flask import Blueprint, render_template, redirect, request
 from app.models import db, User, Sprint, Story, Task
-from flask_login import login_user, logout_user, current_user
+from flask_login import current_user
 
 main_blueprint = Blueprint('main', __name__)
 
 
 @main_blueprint.route("/")
-def view_index():
+def seite_index():
     tasks = []
     aktiver_sprint = None
     for sprint in Sprint.query.all():
@@ -26,27 +26,22 @@ def view_index():
     return render_template("dashboard.html", tasks=tasks, aktiver_sprint=aktiver_sprint)
 
 
-@main_blueprint.route("/sprints")
-def sprints_seite():
-    return render_template("sprints.html", sprints=Sprint.query.all())
-
-
 @main_blueprint.route("/backlog")
-def view_backlog():
+def seite_backlog():
     return render_template("backlog.html")
 
 
 @main_blueprint.route("/users", methods=["GET", "POST"])
-def users_seite():
+def seite_users():
     if request.method == "POST":
         user_id = request.form.get("id")
-        print(request.form)
         delete = request.form.get("delete")
         if delete:
             db.session.delete(User.query.get(user_id))
             db.session.commit()
             return redirect("/users")
-        elif user_id == "-1":
+
+        if user_id == "-1":
             user = User()
             db.session.add(user)
         else:
@@ -66,15 +61,19 @@ def users_seite():
     return render_template("users.html", users=users, users_nach_rolle=users_nach_rolle)
 
 
-@main_blueprint.route("/sprints")
-def all_sprints():
-    sprints = Sprint.query.all()
+@main_blueprint.route("/sprints", methods=["GET", "POST"])
+def seite_sprints():
+    if request.method == "POST" and request.form.get("neu", False):
+        sprint = Sprint()
+        db.session.add(sprint)
+        db.session.commit()
+        return redirect("/sprints")
 
-    return render_template("sprints.html", sprints=sprints)
+    return render_template("sprints.html", sprints=Sprint.query.all())
 
 
 @main_blueprint.route("/sprints/<sprint_id>", methods=["GET", "POST"])
-def view_sprint(sprint_id):
+def seite_sprint(sprint_id):
     db.session.autoflush = False
 
     sprint = Sprint.query.get_or_404(sprint_id)

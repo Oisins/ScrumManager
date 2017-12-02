@@ -4,14 +4,17 @@ from . import db
 from flask_login import UserMixin, current_user
 from datetime import datetime
 from sqlalchemy import func
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 # Beispiel Tabelle
 class User(db.Model, UserMixin):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(30))
+    name = db.Column(db.String(30), default="")
     rolle = db.Column(db.String(30))
+    tasks = db.relationship('Task', backref=db.backref('user', lazy=True))
+    impediments = db.relationship('Impediment', backref=db.backref('user', lazy=True))
 
     def tasks_nach_status(self, status):
         return Task.query.filter_by(status=status, user_id=self.id).all()
@@ -27,10 +30,9 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(500))
     status = db.Column(db.Integer, default=0)  # 0 - Backlog 1 - In Progress 2 - Fertig
-    story_id = db.Column(db.Integer, db.ForeignKey('Story.id'), nullable=False)
-    story = db.relationship('Story', backref=db.backref('tasks', cascade="all, delete-orphan", lazy=True))
+    story_id = db.Column(db.Integer, db.ForeignKey('Story.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
-    user = db.relationship('User', backref=db.backref('tasks', lazy=True))
+    sprint = association_proxy('story', 'sprint')
     _fertig_datum = db.Column(db.DateTime)
 
     def fertig(self):
@@ -63,6 +65,7 @@ class Story(db.Model):
     beschreibung = db.Column(db.String(500))
     sprint_id = db.Column(db.Integer, db.ForeignKey('Sprint.id'), nullable=False)
     sprint = db.relationship('Sprint', backref=db.backref('stories', lazy=True))
+    tasks = db.relationship('Task', backref='story', lazy='dynamic', cascade="all, delete-orphan")
 
     def __init__(self):
         self.id = str(uuid4())
@@ -112,16 +115,16 @@ class Sprint(db.Model):
         try:
             self._ende = datetime.strptime(value, "%d.%m.%Y").date()
         except ValueError:
-            self._start = None
+            self._ende = None
 
     def anzahl_status(self, status):
-        data = db.session.query(func.count(Task.status), Task.status) \
+        data = db.session.query(func.count(Task.status)) \
             .group_by(Task.status) \
-            .filter_by(status=status) \
-            .first()
+            .filter(Task.status == status, Task.sprint == self).scalar()
+
         if not data:
             return 0
-        return data[0]
+        return data
 
     def get_tasks(self):
         tasks = []
@@ -135,6 +138,13 @@ class Sprint(db.Model):
             return False
         now = datetime.now().date()
         return self._start <= now <= self._ende
+
+    @staticmethod
+    def get_aktiv():
+        for sprint in Sprint.query.all():
+            if sprint.ist_aktiv:
+                return sprint
+        return None
 
     def status_desc(self):
         if not (self._ende and self._start):
@@ -150,8 +160,7 @@ class Sprint(db.Model):
             return "Beendet"
 
         elif self._start <= now <= self._ende:
-            remaining = self._ende - now
-            return f"Noch {remaining.days} Tag(e)"
+            return f"Noch {self._ende - now} Tag(e)"
 
 
 class Impediment(db.Model):
@@ -159,7 +168,7 @@ class Impediment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     beschreibung = db.Column(db.String(500), default="")
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
-    user = db.relationship('User', backref=db.backref('impediments', lazy=True))
+    _status = db.relationship('ImpedimentStatus', backref=db.backref('impediment', lazy=True))
     prio = db.Column(db.String(30))  # TODO: In INT umwandeln und GET, SETTER für String
     verantwortlich = db.Column(db.String(30), default="")
     behandlung = db.Column(db.String(500), default="")
@@ -189,7 +198,7 @@ class Impediment(db.Model):
 
     @status.setter
     def status(self, wert):
-        s = ImpedimentStatus()
+        s = ImpedimentStatus(status=wert)
         s.status = wert
         self._status.append(s)
         db.session.add(s)
@@ -206,11 +215,12 @@ class ImpedimentStatus(db.Model):
     __tablename__ = 'ImpedimentStatus'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     impediment_id = db.Column(db.Integer, db.ForeignKey('Impediment.id'))
-    impediment = db.relationship('Impediment', backref=db.backref('_status', lazy=True))
+
     status = db.Column(db.Integer)
     _datum = db.Column(db.DateTime)
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super(**kwargs)
         self._datum = datetime.now()
 
     @property
@@ -229,5 +239,5 @@ class ImpedimentStatus(db.Model):
     def json(self):
         # todo
         return {"id": self.id,
-                "name": self.name,
-                "rolle": self.rolle}
+                "status": self.status,
+                "datum": self.datum}
