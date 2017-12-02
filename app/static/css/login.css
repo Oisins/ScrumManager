@@ -10,13 +10,9 @@
 .login {
     position: relative;
 
-    top: 10%;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    top: 5%;
     margin: auto;
-    height: auto;
-    max-height: 80%;
+    max-height: 90%;
 
     background-color: rgba(255, 255, 255, 0.8);
     box-shadow: rgba(0, 0, 0, 0.4) 0 0 15px 11px;
@@ -27,7 +23,7 @@
     overflow: auto;
 
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(10rem, auto));
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
     grid-gap: 1em;
     justify-content: space-around;
 }

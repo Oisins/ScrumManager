@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="shortcut icon" type="image/png" href="/static/img/logo.png">
-
 </head>
 <body>
 <img class="bg-img" src="/static/img/loginBG.jpg">
@@ -27,13 +26,21 @@
 
     <div class="logins mt-1">
         {% for user in users %}
-            <div class="card">
-                <div class="card-body border border-dark bg-secondary text-white rounded">
-                    <h4 class="card-title text-center">{{ user.name }}</h4>
-                    <h6 class="card-subtitle mb-3 rolle text-center">{{ user.rolle | title }}</h6>
-                    <a href="/login/{{ user.id }}?next={{ next }}" class="btn btn-light w-100">Login</a>
-                </div>
+            <div class="p-3 d-flex flex-column border border-dark bg-secondary text-white rounded">
+                <h3 class="card-title text-center">{{ user.name }}</h3>
+                <h6 class="card-subtitle mb-3 rolle text-center">{{ user.rolle | title }}</h6>
+                <a href="/login/{{ user.id }}?next={{ next }}" class="btn btn-light btn-block mt-auto">Login</a>
             </div>
+        {% else %}
+            <form method="post" action="/api/newuser">
+                <div class="text-center">
+                    Es sind zurzeit keine Nutzer vorhanden
+                    <button class="btn btn-block btn-primary">Neuen Nutzer erstellen</button>
+                </div>
+                <input type="hidden" name="id" value="-1">
+                <input type="hidden" name="name" value="Neuer Nutzer">
+                <input type="hidden" name="rolle" value="Owner">
+            </form>
         {% endfor %}
     </div>
 </div>
