@@ -1,0 +1,28 @@
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1em;
+}
+
+#events {
+    display: grid;
+    grid-gap: 1em;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(120px, 1fr));           
+}
+
+.titel {
+    margin: -1em -1em 1em -1em;
+    border-bottom: 1px solid var(--border-light);;
+    padding: 1em 1em 0.5em 1em;
+}
+
+.datum {
+    font-size: 16pt;
+    display: block;
+    color: black;
+}
+
+.panel:hover {
+  text-decoration: none;
+}

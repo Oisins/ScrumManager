@@ -71,6 +71,10 @@ def seite_sprints():
 
     return render_template("sprints.html", sprints=Sprint.query.all())
 
+@main_blueprint.route("/meetings", methods=["GET", "POST"])
+def seite_meetings():
+    return render_template("meetingmanager.html")
+
 
 @main_blueprint.route("/sprints/<sprint_id>", methods=["GET", "POST"])
 def seite_sprint(sprint_id):

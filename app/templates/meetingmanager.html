@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/meetingmanager.css">
+    <link rel="stylesheet" href="/static/css/fullcalendar.min.css">
+
+    <script src="/static/js/moment.min.js"></script>
+    <script src="/static/js/fullcalendar.min.js"></script>
+    <script src="/static/js/de.js"></script>
+    <script>
+        $(document).ready(function() {
+
+            // page is now ready, initialize the calendar...
+
+            $('#calendar').fullCalendar({
+                events: [
+                    {
+                        title  : 'event1',
+                        start  : '2017-12-04'
+                    },
+                    {
+                        title  : 'event2',
+                        start  : '2010-01-05',
+                        end    : '2010-01-07'
+                    },
+                    {
+                        title  : 'event3',
+                        start  : '2010-01-09T12:30:00',
+                        allDay : false // will make the time show
+                    }
+                ]
+            })
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="container mt-3" id="container">
+        
+        <div class="panel">
+            <div id="calendar"></div>
+        </div>
+    
+        <div class="panel" id="">
+            <div class="titel"><h3>Meetings</h3></div>
+             {% for i in range(3) %}
+                <div class="panel mb-3">
+                    <div class="panel-titel mb-0 d-flex justify-content-between">
+                        <a href=""><h4>12.12.17</h4></a>
+                        <button class="float-right btn btn-light edit-story" type="button">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <span class="text-muted">Meeting</span>
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-light d-block m-auto p-3">
+                <i class="fa fa-plus d-block" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+{% endblock %}
