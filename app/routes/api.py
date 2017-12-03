@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, jsonify, redirect
+from flask import Blueprint, jsonify, redirect, request
 from app.models import Task, User, Story, Sprint, db
 
 api_blueprint = Blueprint('api', __name__, url_prefix="/api")
@@ -20,8 +20,8 @@ def api_get_users():
 @api_blueprint.route("/newuser", methods=["POST"])
 def api_new_user():
     user = User()
-    user.name = "Neuer Nutzer"
-    user.rolle = "Owner"
+    user.name = request.form.get("name", "Neuer Nutzer")
+    user.rolle = request.form.get("rolle", "team")
     db.session.add(user)
     db.session.commit()
 

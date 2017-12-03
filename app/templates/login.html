@@ -34,12 +34,11 @@
         {% else %}
             <form method="post" action="/api/newuser">
                 <div class="text-center">
-                    Es sind zurzeit keine Nutzer vorhanden
-                    <button class="btn btn-block btn-primary">Neuen Nutzer erstellen</button>
+                    <button class="btn btn-outline-dark">Neuen Nutzer erstellen</button>
                 </div>
                 <input type="hidden" name="id" value="-1">
-                <input type="hidden" name="name" value="Neuer Nutzer">
-                <input type="hidden" name="rolle" value="Owner">
+                <input type="hidden" name="name" value="">
+                <input type="hidden" name="rolle" value="owner">
             </form>
         {% endfor %}
     </div>
