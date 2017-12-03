@@ -6,6 +6,14 @@
     </li>
 {% endmacro %}
 
+{% macro text_input(name, lable, placeholder, value="") %}
+    <div class="form-group">
+        <label for="{{ name }}Input">{{ lable }}</label>
+        <input id="{{ name }}Input" class="form-control" name="{{ name }}" type="text"
+               placeholder="{{ placeholder }}" value="{{ value }}">
+    </div>
+{% endmacro %}
+
 <!DOCTYPE html>
 <html>
 <head>

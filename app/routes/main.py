@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from flask import Blueprint, render_template, redirect, request
-from app.models import db, User, Sprint, Story, Task
+from app.models import db, User, Sprint, Story, Task, Kriterium
 from flask_login import current_user
 
 main_blueprint = Blueprint('main', __name__)
@@ -26,9 +26,35 @@ def seite_index():
     return render_template("dashboard.html", tasks=tasks, aktiver_sprint=aktiver_sprint)
 
 
-@main_blueprint.route("/backlog")
+@main_blueprint.route("/backlog", methods=["GET", "POST"])
 def seite_backlog():
-    return render_template("backlog.html")
+    if request.method == "POST":
+        data = json.loads(request.form.get("data"))
+        story = Story.query.get(data.get("id"))
+        if not story:
+            return ""
+
+        story.titel = data.get("titel")
+        story.beschreibung = data.get("beschreibung")
+        sprint_id = data.get("sprint_id", "-1")
+        print(sprint_id)
+
+        if sprint_id == "-1":
+            story.sprint = None
+        else:
+            story.sprint = Sprint.query.get(sprint_id)
+        Kriterium.query.filter_by(story=story).delete()
+        for kriterium in data.get("kriterien", []):
+            k = Kriterium()
+            k.beschreibung = kriterium.get("beschreibung")
+            db.session.add(k)
+            story.kriterien.append(k)
+
+        db.session.commit()
+        return redirect("/backlog")
+
+    stories = Story.query.all()
+    return render_template("backlog.html", stories=stories, sprints=Sprint.query.all())
 
 
 @main_blueprint.route("/users", methods=["GET", "POST"])
@@ -95,6 +121,7 @@ def seite_sprint(sprint_id):
             db.session.delete(story)
             continue
 
+        story.titel = story_data.get("titel")
         story.beschreibung = story_data.get("beschreibung")
 
         Task.query.filter_by(story_id=story.id).delete()

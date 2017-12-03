@@ -1,28 +1,222 @@
 {% extends "base.html" %}
+{% macro story_panel() %}
+    <div class="panel">
+        <div class="panel-title d-flex justify-content-between">
+            <h4 class="story-titel"></h4>
+            <button class="btn btn-light story-edit" type="button">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </button>
+        </div>
+        <p class="card-text story-beschreibung"></p>
+        <h6>Akzeptanzkriterien:</h6>
+        <ul class="list-group kriterien">
+        </ul>
+
+        <a href="#" class="card-link story-link"></a>
+    </div>
+{% endmacro %}
+{% macro kriterium_dom() %}
+    <div class="input-group mb-1">
+        <input type="text" class="form-control kriterium-beschreibung" placeholder="Kriterium">
+        <span class="input-group-btn">
+        <button class="btn btn-dark kriterium-delete" type="button">X</button>
+      </span>
+    </div>
+{% endmacro %}
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="/static/css/backlog.css">
+    <script>
+        var container;
+        var form;
+        var data_input;
+        var kriterien_div;
+        var editing_story;
+
+        class Kriterium {
+            constructor(beschreibung, story) {
+                this.story = story;
+                this.beschreibung = beschreibung;
+                this.dom = $(`{{ kriterium_dom() }}`);
+                this.dom.find(".kriterium-delete").click(() => this.remove());
+
+                this.input = this.dom.find(".kriterium-beschreibung");
+                this.input.val(this.beschreibung);
+            }
+
+            remove() {
+                var i = this.story.kriterien.indexOf(this);
+                this.story.kriterien.splice(i, 1);
+
+                this.dom.remove();
+            }
+
+            save() {
+                this.beschreibung = this.input.val();
+            }
+
+            to_json() {
+                return {
+                    "beschreibung": this.beschreibung
+                }
+            }
+        }
+
+        class Story {
+            constructor(id, titel = "", beschreibung = "", kriterien = [], sprint_id) {
+                this.id = id || uuid();
+                this.to_delete = false;
+                this.titel = titel;
+                this.beschreibung = beschreibung;
+                this.kriterien = kriterien;
+                this.sprint_id = sprint_id;
+
+                this.dom = $(`{{ story_panel() }}`);
+                this.dom.find(".story-edit").click(() => this.edit());
+
+                var kriterien_container = this.dom.find(".kriterien");
+
+                this.kriterien = this.kriterien.map(kriterium => {
+                    var k = new Kriterium(kriterium.beschreibung, this);
+                    kriterien_container.append(`<li class="list-group-item">${kriterium.beschreibung}</li>`);
+                    return k;
+                });
+                this.show();
+                container.append(this.dom);
+            }
+
+            show() {
+                this.dom.find(".story-titel").html(this.titel);
+                this.dom.find(".story-beschreibung").html(this.beschreibung);
+                var link = this.dom.find(".story-link");
+                link.attr("href", "/sprints/" + this.sprint_id);
+                link.html("Zu Sprint " + this.sprint_id);
+
+            }
+
+            edit() {
+                editing_story = this;
+                $("#editTitleInput").val(this.titel);
+                $("#story-beschreibung").val(this.beschreibung);
+                $("#editSprint").val(this.sprint_id);
+
+                kriterien_div.html("");
+                this.kriterien.map(kriterium => kriterien_div.append(kriterium.dom));
+
+                $("#bearbeitenModal").modal({backdrop: 'static', keyboard: false});
+            }
+
+            add_kriterium() {
+                var kriterium = new Kriterium("", this);
+                kriterien_div.append(kriterium.dom);
+                this.kriterien.push(kriterium);
+            }
+
+            save() {
+                this.titel = $("#editTitleInput").val();
+                this.beschreibung = $("#story-beschreibung").val();
+                this.kriterien.map(kriterium => kriterium.save());
+                this.sprint_id = $("#editSprint").val();
+                this.submit();
+            }
+
+            remove() {
+                this.to_delete = true;
+                this.submit();
+            }
+
+            submit() {
+                data_input.val(JSON.stringify(this.to_json()));
+                form.submit();
+            }
+
+            to_json() {
+                return {
+                    "id": this.id,
+                    "to_delete": this.to_delete,
+                    "titel": this.titel,
+                    "sprint_id": this.sprint_id,
+                    "beschreibung": this.beschreibung,
+                    "kriterien": this.kriterien.map(kriterium => kriterium.to_json())
+                }
+            }
+        }
+
+        $(() => {
+            // "Laden..." anzeigen
+            modal = $("#loadingModal").modal();
+            container = $("#container");
+            kriterien_div = $("#edit-kriterien");
+            form = $("#form");
+            data_input = form.children().first();
+
+            $("#add-kriterium").click(() => editing_story.add_kriterium());
+            $("#edit-save").click(() => editing_story.save());
+            $("#edit-delete").click(() => editing_story.remove());
+
+            $.getJSON("/api/stories").done(data => {
+                var story;
+
+                for (var s of data) {
+                    story = new Story(s.id, s.titel, s.beschreibung, s.kriterien, s.sprint_id);
+                }
+            });
+            modal.modal("hide");
+        });
+    </script>
 {% endblock %}
 {% block body %}
+    <form method="post" id="form">
+        <input type="hidden" name="data">
+    </form>
     <div class="container pt-3" id="container">
-        <div class="title text-center">
-            <h2 class="font-weight-bold m-0">Product-Backlog</h2>
-        </div>
-        {% for i in range(5) %}
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">User Story Titel</h4>
-                    <p class="card-text">Beschreibung der Anforderungen. Lorem ipsum dolor sit amet, consectetur
-                        adipiscing elit. Ut consequat felis felis. Maecenas facilisis, velit dignissim laoreet tempor,
-                        felis augue consectetur justo, nec bibendum dolor neque at erat.</p>
-                    <h6> Akzeptanzkriterien:</h6>
-                    <ul class="list-group">
-                        <li class="list-group-item">• Kriterium 1</li>
-                        <li class="list-group-item">• Kriterium 2</li>
-                    </ul>
-                    <a href="#" class="card-link">Dazugehöriger Sprint</a>
+    </div>
+
+    <div class="modal" id="bearbeitenModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Story bearbeiten</h5>
+                </div>
+                <div class="modal-body">
+                    {{ text_input("editTitle", "Titel", "Titel") }}
+                    <div class="form-group">
+                        <label for="story-beschreibung">Beschreibung</label>
+                        <textarea id="story-beschreibung" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSprint">Sprint</label>
+                        <select class="form-control" id="editSprint">
+                            <option value="-1">Kein Sprint</option>
+                            {% for sprint in sprints %}
+                                <option value="{{ sprint.id }}">
+                                    {{ sprint.id }} ({{ sprint.start }} bis {{ sprint.ende }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <h6>Akzeptanzkriterien</h6>
+                    <div id="edit-kriterien" class="mb-1"></div>
+                    <button type="submit" class="btn btn-light d-block m-auto p-2" id="add-kriterium">
+                        <i class="fa fa-plus d-block" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button id="edit-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
+                    <button id="edit-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
                 </div>
             </div>
-        {% endfor %}
+        </div>
+    </div>
+
+    <div class="modal align-items-center justify-content-center" id="loadingModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content p-5">
+                <div class="modal-body">
+                    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                    <div class="text-muted text-center">Lädt...</div>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

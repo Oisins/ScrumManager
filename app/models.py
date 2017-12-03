@@ -7,7 +7,6 @@ from sqlalchemy import func
 from sqlalchemy.ext.associationproxy import association_proxy
 
 
-# Beispiel Tabelle
 class User(db.Model, UserMixin):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -62,10 +61,12 @@ class Task(db.Model):
 class Story(db.Model):
     __tablename__ = 'Story'
     id = db.Column(db.String(38), primary_key=True)
+    titel = db.Column(db.String(150))
     beschreibung = db.Column(db.String(500))
-    sprint_id = db.Column(db.Integer, db.ForeignKey('Sprint.id'), nullable=False)
+    sprint_id = db.Column(db.Integer, db.ForeignKey('Sprint.id'))
     sprint = db.relationship('Sprint', backref=db.backref('stories', lazy=True))
     tasks = db.relationship('Task', backref='story', lazy='dynamic', cascade="all, delete-orphan")
+    kriterien = db.relationship('Kriterium', backref=db.backref('story', lazy=True))
 
     def __init__(self):
         self.id = str(uuid4())
@@ -75,8 +76,22 @@ class Story(db.Model):
 
     def json(self):
         return {"id": self.id,
+                "titel": self.titel,
                 "beschreibung": self.beschreibung,
+                "sprint_id": self.sprint_id,
+                "kriterien": [kriterium.json() for kriterium in self.kriterien],
                 "tasks": [task.json() for task in self.tasks]}
+
+
+class Kriterium(db.Model):
+    __tablename__ = 'Kriterium'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    beschreibung = db.Column(db.String(500), default="")
+    story_id = db.Column(db.String(38), db.ForeignKey('Story.id'))
+
+    def json(self):
+        return {"id": self.id,
+                "beschreibung": self.beschreibung}
 
 
 class Sprint(db.Model):

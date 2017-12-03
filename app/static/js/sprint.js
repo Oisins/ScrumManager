@@ -123,7 +123,7 @@ class Story {
     constructor(id, name = "", beschreibung = "", tasks = []) {
         this.id = id || uuid();
         this.to_delete = false;
-        this.name = name;
+        this.titel = name;
         this.beschreibung = beschreibung;
         this.tasks = tasks;
 
@@ -165,13 +165,14 @@ class Story {
     }
 
     update_dom() {
-        this.dom.find(".story-name").html("");
+        this.dom.find(".story-name").html(this.titel);
         this.dom.find(".story-beschreibung").html(this.beschreibung);
     }
 
     edit() {
         editing_story = this;
 
+        $("#story-titel").val(this.titel);
         $("#story-beschreibung").val(this.beschreibung);
 
         $("#editStoryModal").modal({backdrop: 'static', keyboard: false});
@@ -180,6 +181,7 @@ class Story {
     save() {
         unsaved_changes = true;
 
+        this.titel = $("#story-titel").val();
         this.beschreibung = $("#story-beschreibung").val();
 
         taskboard.update_data();
@@ -201,6 +203,7 @@ class Story {
         return {
             "id": this.id,
             "to_delete": this.to_delete,
+            "titel": this.titel,
             "beschreibung": this.beschreibung,
             "tasks": this.tasks.map(task => task.to_json())
         }
@@ -225,7 +228,7 @@ class TaskBoard {
 
                 /** @namespace data.stories */
                 for (var s of data.stories) {
-                    story = new Story(s.id, s.name, s.beschreibung, s.tasks);
+                    story = new Story(s.id, s.titel, s.beschreibung, s.tasks);
                     this.stories.push(story);
 
                     story.tasks = story.tasks.map(task => {
