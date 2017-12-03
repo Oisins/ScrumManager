@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<link rel="stylesheet" href="/static/css/sprints.css"> {% endblock %} {% block body %}
+<div class="container mt-3y">
+       <div>
+        <h4>Meetings</h4>
+    </div>
+</div>
+<div class="container mt-3 ">
+    <div class="card-body border border-secondary bg-white">
+        <h4 class="card-title">Daily Scrum Meeting/Sprint Retrospective Meeting 01.01.2000</h4>
+      
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">User</th>
+                        <th scope="col">Gemacht/Gut</th>
+                        <th scope="col">Zu tun/Schlecht</th>
+                        <th scope="col">Verbesserungen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">John Doe</th>
+                        <td>/</td>
+                        <td>/</td>
+                        <td>/</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">John Foe</th>
+                        <td>/</td>
+                        <td>/</td>
+                        <td>/</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">John Goe</th>
+                        <td>/</td>
+                        <td>/</td>
+                        <td>/</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    <div class="card-footer bg-white text-muted border border-secondary border-top-0">
+        Vor 2 Tagen
+    </div>
+</div>
+{% endblock %}
