@@ -97,7 +97,12 @@
             </span>
         </div>
         <div class="panel">
-            <div class="panel-titel">Meine Tasks</div>
+            <div class="panel-titel d-flex justify-content-between">
+                <span>Meine Tasks</span>
+                {% if aktiver_sprint %}
+                    <a class="btn btn-primary" href="/sprints/{{ aktiver_sprint.id }}">Zum Sprint</a>
+                {% endif %}
+            </div>
             {% for task in tasks %}
                 <div class="card mb-2">
                     <div class="card-body">
