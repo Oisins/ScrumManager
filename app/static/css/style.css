@@ -1,9 +1,39 @@
+/*
+ *   Theme
+ */
+:root {
+	--main-background-color: #ecf0f1;
+	--border-light: rgba(0,0,0,.125);
+	--border-highlight: #17a2b8;
+	--border-dark: rgba(0, 0, 0, 0.32);
+	--navbar: #2c3e50;
+	--navbar-highlight: #34495e;
+}
+
+
+/*
+ *   Style
+ */
+
 html, body {
     height: 100%;
 }
 
+body {
+    background-color: var(--main-background-color);
+}
+
+.navbar {
+    background-color: var(--navbar) !important;
+}
+
+.nav-link:hover {
+    background-color: var(--navbar-highlight) !important;
+}
+
+
 /*
-    Komponenten
+ *   Komponenten
  */
 .panel {
     border: 1px solid var(--border-light);
@@ -12,6 +42,5 @@ html, body {
 }
 
 .panel-titel {
-    font-size: 16pt;
-    margin-bottom: 0.5rem;
+    margin-bottom: .75rem;
 }
