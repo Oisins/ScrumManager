@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, render_template, redirect, request
 from app.models import db, User, Sprint, Story, Task, Kriterium
 from flask_login import current_user
+from datetime import datetime
 
 main_blueprint = Blueprint('main', __name__)
 
@@ -10,20 +11,12 @@ main_blueprint = Blueprint('main', __name__)
 @main_blueprint.route("/")
 def seite_index():
     tasks = []
-    aktiver_sprint = None
-    for sprint in Sprint.query.all():
-        if sprint.ist_aktiv:
-            tasks = sprint.get_tasks()
-            aktiver_sprint = sprint
-    else:
-        # Kein aktiver Sprint
-        # TODO Burndown chart verstecken
-        pass
+    sprint = Sprint.get_aktiv()
+    if sprint:
+        tasks = [task for task in sprint.get_tasks() if task.user == current_user]
+        tasks.sort(key=lambda task: task.status)
 
-    tasks = [task for task in tasks if task.user == current_user]
-    tasks.sort(key=lambda task: task.status)
-
-    return render_template("dashboard.html", tasks=tasks, aktiver_sprint=aktiver_sprint)
+    return render_template("dashboard.html", tasks=tasks)
 
 
 @main_blueprint.route("/backlog", methods=["GET", "POST"])
@@ -31,18 +24,14 @@ def seite_backlog():
     if request.method == "POST":
         data = json.loads(request.form.get("data"))
         story = Story.query.get(data.get("id"))
+        sprint_id = data.get("sprint_id", "-1")
         if not story:
-            return ""
+            return redirect("/backlog")
 
         story.titel = data.get("titel")
         story.beschreibung = data.get("beschreibung")
-        sprint_id = data.get("sprint_id", "-1")
-        print(sprint_id)
+        story.sprint = Sprint.query.get(sprint_id)
 
-        if sprint_id == "-1":
-            story.sprint = None
-        else:
-            story.sprint = Sprint.query.get(sprint_id)
         Kriterium.query.filter_by(story=story).delete()
         for kriterium in data.get("kriterien", []):
             k = Kriterium()
@@ -53,38 +42,32 @@ def seite_backlog():
         db.session.commit()
         return redirect("/backlog")
 
-    stories = Story.query.all()
-    return render_template("backlog.html", stories=stories, sprints=Sprint.query.all())
+    return render_template("backlog.html", stories=Story.query.all(), sprints=Sprint.query.all())
 
 
 @main_blueprint.route("/users", methods=["GET", "POST"])
 def seite_users():
-    if request.method == "POST":
-        user_id = request.form.get("id")
-        delete = request.form.get("delete")
-        if delete:
-            db.session.delete(User.query.get(user_id))
-            db.session.commit()
-            return redirect("/users")
+    if request.method == "GET":
+        return render_template("users.html",
+                               users=User.query.all(),
+                               users_nach_rolle=lambda rolle: User.query.filter_by(rolle=rolle).all())
 
-        if user_id == "-1":
-            user = User()
-            db.session.add(user)
-        else:
-            user = User.query.get(user_id)
+    user = User.query.get(request.form.get("id"))
 
-        if user:
-            user.rolle = request.form.get("rolle")
-            user.name = request.form.get("name")
-
-            db.session.commit()
+    if request.form.get("delete", False):
+        db.session.delete(user)
+        db.session.commit()
         return redirect("/users")
 
-    def users_nach_rolle(rolle):
-        return User.query.filter_by(rolle=rolle).all()
+    if not user:
+        user = User()
+        db.session.add(user)
 
-    users = User.query.all()  # "SELECT * FROM user;" => [User1, User2, ...]
-    return render_template("users.html", users=users, users_nach_rolle=users_nach_rolle)
+    user.rolle = request.form.get("rolle")
+    user.name = request.form.get("name")
+
+    db.session.commit()
+    return redirect("/users")
 
 
 @main_blueprint.route("/sprints", methods=["GET", "POST"])
@@ -124,16 +107,23 @@ def seite_sprint(sprint_id):
         story.titel = story_data.get("titel")
         story.beschreibung = story_data.get("beschreibung")
 
-        Task.query.filter_by(story_id=story.id).delete()
         for task_data in story_data.get("tasks", []):
-            task = Task()
+            task = Task.query.get(task_data.get("id"))
+            if task and task_data.get("delete", False):
+                db.session.delete(task)
+                continue
+
+            if not task:
+                task = Task()
 
             task.story = story
-            task.status = task_data.get("status")
-            if task.status == 2:
-                task.fertig()
             task.name = task_data.get("name")
             task.user = User.query.get(task_data.get("user_id"))
+
+            neuer_status = task_data.get("status")
+            if task.status != neuer_status and neuer_status == 2:
+                task._fertig_datum = datetime.now()
+            task.status = neuer_status
 
             story.tasks.append(task)
             db.session.add(task)

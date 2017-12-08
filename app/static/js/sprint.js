@@ -36,6 +36,7 @@ class Task {
         this.story = story;
         this.name = name;
         this.user = user;
+        this.delete = false;
 
         // DOM Objekt erstellen
         this.dom = $(task_template);
@@ -89,10 +90,9 @@ class Task {
     remove() {
         unsaved_changes = true;
 
-        this.story.remove_task(this);
+        this.delete = true;
 
         this.dom.remove();
-
         taskboard.update_data();
     }
 
@@ -114,7 +114,8 @@ class Task {
             "name": this.name,
             "status": this.status,
             "story_id": this.story.id,
-            "user_id": this.user.id
+            "user_id": this.user.id,
+            "delete": this.delete
         }
     }
 }
@@ -160,8 +161,6 @@ class Story {
     }
 
     remove_task(task) {
-        task.story = null;
-        this.tasks = this.tasks.filter(tsk => tsk !== task);
     }
 
     update_dom() {
