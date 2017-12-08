@@ -5,13 +5,14 @@ from flask_login import UserMixin, current_user
 from datetime import datetime
 from sqlalchemy import func
 from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class User(db.Model, UserMixin):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(30), default="")
-    rolle = db.Column(db.String(30))
+    rolle = db.Column(db.String(30), default="team")
     tasks = db.relationship('Task', backref=db.backref('user', lazy=True))
     impediments = db.relationship('Impediment', backref=db.backref('user', lazy=True))
 
@@ -27,15 +28,12 @@ class User(db.Model, UserMixin):
 class Task(db.Model):
     __tablename__ = 'Task'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(500))
+    name = db.Column(db.String(500), default="")
     status = db.Column(db.Integer, default=0)  # 0 - Backlog 1 - In Progress 2 - Fertig
     story_id = db.Column(db.Integer, db.ForeignKey('Story.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
     sprint = association_proxy('story', 'sprint')
     _fertig_datum = db.Column(db.DateTime)
-
-    def fertig(self):
-        self._fertig_datum = datetime.now()
 
     @property
     def fertig_datum(self):
@@ -61,8 +59,8 @@ class Task(db.Model):
 class Story(db.Model):
     __tablename__ = 'Story'
     id = db.Column(db.String(38), primary_key=True)
-    titel = db.Column(db.String(150))
-    beschreibung = db.Column(db.String(500))
+    titel = db.Column(db.String(150), default="")
+    beschreibung = db.Column(db.String(500), default="")
     sprint_id = db.Column(db.Integer, db.ForeignKey('Sprint.id'))
     sprint = db.relationship('Sprint', backref=db.backref('stories', lazy=True))
     tasks = db.relationship('Task', backref='story', lazy='dynamic', cascade="all, delete-orphan")
@@ -147,19 +145,16 @@ class Sprint(db.Model):
             tasks += story.tasks
         return tasks
 
-    @property
-    def ist_aktiv(self):
+    @hybrid_property
+    def aktiv(self):
         if not (self._ende and self._start):
             return False
         now = datetime.now().date()
-        return self._start <= now <= self._ende
+        return (self._start <= now) & (now <= self._ende)
 
     @staticmethod
     def get_aktiv():
-        for sprint in Sprint.query.all():
-            if sprint.ist_aktiv:
-                return sprint
-        return None
+        return Sprint.query.filter_by(aktiv=True).first()
 
     def status_desc(self):
         if not (self._ende and self._start):
@@ -175,7 +170,8 @@ class Sprint(db.Model):
             return "Beendet"
 
         elif self._start <= now <= self._ende:
-            return f"Noch {self._ende - now} Tag(e)"
+            delta = self._ende - now
+            return f"Noch {delta.days} Tag(e)"
 
 
 class Impediment(db.Model):
@@ -184,7 +180,7 @@ class Impediment(db.Model):
     beschreibung = db.Column(db.String(500), default="")
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
     _status = db.relationship('ImpedimentStatus', backref=db.backref('impediment', lazy=True))
-    prio = db.Column(db.String(30))  # TODO: In INT umwandeln und GET, SETTER für String
+    prio = db.Column(db.String(30))
     verantwortlich = db.Column(db.String(30), default="")
     behandlung = db.Column(db.String(500), default="")
     _datum = db.Column(db.DateTime)
@@ -219,12 +215,6 @@ class Impediment(db.Model):
         db.session.add(s)
         db.session.commit()
 
-    def json(self):
-        # todo
-        return {"id": self.id,
-                "name": self.name,
-                "rolle": self.rolle}
-
 
 class ImpedimentStatus(db.Model):
     __tablename__ = 'ImpedimentStatus'
@@ -250,9 +240,3 @@ class ImpedimentStatus(db.Model):
             self._datum = datetime.strptime(value, "%d.%m.%Y").date()
         except ValueError:
             self._datum = None
-
-    def json(self):
-        # todo
-        return {"id": self.id,
-                "status": self.status,
-                "datum": self.datum}
