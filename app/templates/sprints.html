@@ -5,16 +5,14 @@
 {% endblock %}
 {% block body %}
     <div class="container mt-3">
-        <div>
-            Für dieses Projekt sind n Sprints geplant. Zurzeit befinden Sie sich im n.
-        </div>
         {% for sprint in sprints %}
-            <div class="sprint p-3 mb-3 {% if sprint.ist_aktiv %}border border-info{% endif %}">
+            <div class="panel p-3 mb-3 {% if sprint.aktiv %}border border-info{% endif %}">
                 <span class="dauer p-2 rounded">{{ sprint.status_desc() }}</span>
-                <h4 class="card-title">Sprint {{ sprint.id }}</h4>
+                <h4 class="panel-titel">Sprint {{ sprint.id }}</h4>
 
-                <p class="card-text">
-                    Start: {{ sprint.start }}<br> Ende: {{ sprint.ende }}
+                <p>
+                    Start: {{ sprint.start }}<br>
+                    Ende: {{ sprint.ende }}
                 </p>
                 <a href="/sprints/{{ sprint.id }}" class="btn btn-primary">Details</a>
                 <div class="status mt-3 p-2">
