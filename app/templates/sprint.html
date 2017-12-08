@@ -61,71 +61,23 @@
             </tbody>
         </table>
 
-        <!-- EDIT STORY -->
-        <div class="modal" id="editStoryModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">User Story bearbeiten</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="story-titel">Titel</label>
-                            <input id="story-titel" type="text" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="story-beschreibung">Beschreibung</label>
-                            <textarea id="story-beschreibung" class="form-control"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="story-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
-                        <button id="story-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% call forms.modal("editStory", "User Story bearbeiten", [["delete", True], ["save", True]]) %}
+            {{ forms.input("storyTitle", "Titel", "Titel") }}
+            {{ forms.textarea("storyBeschreibung", "Beschreibung") }}
+        {% endcall %}
 
-        <!-- EDIT TASK -->
-        <div class="modal" id="editTaskModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Task bearbeiten</h5>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="task-name">Beschreibung</label>
-                            <input id="task-name" class="form-control" name="beschreibung" type="text"
-                                   placeholder="Beschreibung">
-                        </div>
-                        <div class="form-group">
-                            <label for="task-user">User</label>
-                            <select class="form-control" id="task-user">
-                                <option value="-1">Nicht zugewiesen</option>
-                                {% for user in users %}
-                                    <option value="{{ user.id }}">{{ user.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="task-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
-                        <button id="task-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
-                    </div>
-                </div>
+        {% call forms.modal("editTask", "Task bearbeiten", [["delete", True], ["save", True]]) %}
+            {{ forms.input("taskName", "Beschreibung", "Beschreibung") }}
+            <div class="form-group">
+                <label for="taskUserSelect">User</label>
+                <select class="form-control" id="taskUserSelect">
+                    <option value="-1">Nicht zugewiesen</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-        </div>
-
-        <div class="modal align-items-center justify-content-center" id="loadingModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content p-5">
-                    <div class="modal-body">
-                        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-                        <div class="text-muted text-center">Lädt...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endcall %}
+        {{ forms.loadingModal() }}
     </div>
 {% endblock %}

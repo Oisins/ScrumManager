@@ -1,0 +1,79 @@
+{% macro input(name, lable, placeholder="", value="") %}
+    <div class="form-group">
+        <label for="{{ name }}Input">{{ lable }}</label>
+        <input id="{{ name }}Input"
+               class="form-control"
+               name="{{ name }}"
+               type="text"
+               placeholder="{{ placeholder }}"
+               value="{{ value }}">
+    </div>
+{% endmacro %}
+{% macro textarea(name, lable, placeholder="", value="") %}
+    <div class="form-group">
+        <label for="{{ name }}Textarea">{{ lable }}</label>
+        <textarea id="{{ name }}Textarea"
+                  class="form-control"
+                  name="{{ name }}"
+                  placeholder="{{ placeholder }}">{{ value }}</textarea>
+    </div>
+{% endmacro %}
+
+{% macro modal(id, titel, buttons, closable=False) %}
+    {# buttons = [["close", True], ...] => button "close" can close dialog #}
+    <div class="modal" id="{{ id }}Modal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ titel }}</h5>
+                    {% if closable %}
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="modal-body">
+                    {{ caller() }}
+                </div>
+                {% if buttons %}
+                    <div class="modal-footer">
+                        {% for button in buttons %}
+                            {% if button[0] == "delete" %}
+                                <button id="{{ id }}ModalDelete"
+                                        class="btn btn-danger"
+                                        {% if button[1] %}data-dismiss="modal"{% endif %}>
+                                    Löschen
+                                </button>
+                            {% elif button[0] == "save" %}
+                                <button id="{{ id }}ModalSave"
+                                        class="btn btn-primary"
+                                        {% if button[1] %}data-dismiss="modal"{% endif %}>
+                                    Speichern
+                                </button>
+                            {% elif button[0] == "close" %}
+                                <button id="{{ id }}ModalClose"
+                                        class="btn btn-secondary"
+                                        {% if button[1] %}data-dismiss="modal"{% endif %}>
+                                    Schließen
+                                </button>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    </div>
+                {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro loadingModal() %}
+    <div class="modal align-items-center justify-content-center" id="loadingModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content p-5">
+                <div class="modal-body">
+                    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                    <div class="text-muted text-center">Lädt...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

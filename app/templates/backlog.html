@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% macro story_panel() %}
-    <div class="panel">
+    <div class="panel d-flex flex-column">
         <div class="panel-title d-flex justify-content-between">
             <h4 class="story-titel"></h4>
             <button class="btn btn-light story-edit" type="button">
@@ -9,10 +9,10 @@
         </div>
         <p class="card-text story-beschreibung"></p>
         <h6>Akzeptanzkriterien:</h6>
-        <ul class="list-group kriterien">
+        <ul class="list-group kriterien mb-2">
         </ul>
 
-        <a href="#" class="card-link story-link"></a>
+        <a href="#" class="mt-auto story-link"></a>
     </div>
 {% endmacro %}
 {% macro kriterium_dom() %}
@@ -97,7 +97,7 @@
             edit() {
                 editing_story = this;
                 $("#editTitleInput").val(this.titel);
-                $("#story-beschreibung").val(this.beschreibung);
+                $("#editBeschreibungTextarea").val(this.beschreibung);
                 $("#editSprint").val(this.sprint_id);
 
                 kriterien_div.html("");
@@ -114,7 +114,7 @@
 
             save() {
                 this.titel = $("#editTitleInput").val();
-                this.beschreibung = $("#story-beschreibung").val();
+                this.beschreibung = $("#editBeschreibungTextarea").val();
                 this.kriterien.map(kriterium => kriterium.save());
                 this.sprint_id = $("#editSprint").val();
                 this.submit();
@@ -151,8 +151,8 @@
             data_input = form.children().first();
 
             $("#add-kriterium").click(() => editing_story.add_kriterium());
-            $("#edit-save").click(() => editing_story.save());
-            $("#edit-delete").click(() => editing_story.remove());
+            $("#bearbeitenModalSave").click(() => editing_story.save());
+            $("#bearbeitenModalDelete").click(() => editing_story.remove());
 
             $.getJSON("/api/stories").done(data => {
                 var story;
@@ -172,51 +172,25 @@
     <div class="container pt-3" id="container">
     </div>
 
-    <div class="modal" id="bearbeitenModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Story bearbeiten</h5>
-                </div>
-                <div class="modal-body">
-                    {{ text_input("editTitle", "Titel", "Titel") }}
-                    <div class="form-group">
-                        <label for="story-beschreibung">Beschreibung</label>
-                        <textarea id="story-beschreibung" class="form-control"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editSprint">Sprint</label>
-                        <select class="form-control" id="editSprint">
-                            <option value="-1">Kein Sprint</option>
-                            {% for sprint in sprints %}
-                                <option value="{{ sprint.id }}">
-                                    {{ sprint.id }} ({{ sprint.start }} bis {{ sprint.ende }})
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <h6>Akzeptanzkriterien</h6>
-                    <div id="edit-kriterien" class="mb-1"></div>
-                    <button type="submit" class="btn btn-light d-block m-auto p-2" id="add-kriterium">
-                        <i class="fa fa-plus d-block" aria-hidden="true"></i>
-                    </button>
-                </div>
-                <div class="modal-footer">
-                    <button id="edit-delete" class="btn btn-danger" data-dismiss="modal">Löschen</button>
-                    <button id="edit-save" class="btn btn-primary" data-dismiss="modal">Fertig</button>
-                </div>
-            </div>
+    {% call forms.modal("bearbeiten", "Story bearbeiten", [["delete", False], ["save", False]]) %}
+        {{ forms.input("editTitle", "Titel", "Titel") }}
+        {{ forms.textarea("editBeschreibung", "Beschreibung") }}
+        <div class="form-group">
+            <label for="editSprint">Sprint</label>
+            <select class="form-control" id="editSprint">
+                <option value="-1">Kein Sprint</option>
+                {% for sprint in sprints %}
+                    <option value="{{ sprint.id }}">
+                        {{ sprint.id }} ({{ sprint.start }} bis {{ sprint.ende }})
+                    </option>
+                {% endfor %}
+            </select>
         </div>
-    </div>
-
-    <div class="modal align-items-center justify-content-center" id="loadingModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content p-5">
-                <div class="modal-body">
-                    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-                    <div class="text-muted text-center">Lädt...</div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <h6>Akzeptanzkriterien</h6>
+        <div id="edit-kriterien" class="mb-1"></div>
+        <button type="submit" class="btn btn-light d-block m-auto p-2" id="add-kriterium">
+            <i class="fa fa-plus d-block" aria-hidden="true"></i>
+        </button>
+    {% endcall %}
+    {{ forms.loadingModal() }}
 {% endblock %}

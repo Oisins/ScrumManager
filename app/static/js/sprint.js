@@ -23,6 +23,8 @@ var story_template = `
                 </button>
                 <h5 class="story-name"><!-- Name --></h5>
                 <span class="story-beschreibung"><!-- Beschreibung --></span>
+                <h6 class="mt-3">Kriterien:</h6>
+                <ul class="story-kriterien"></ul>
             </td>
             <td class="task-cell" data-status="0"></td>
             <td class="task-cell" data-status="1"></td>
@@ -30,8 +32,8 @@ var story_template = `
         </tr>`;
 
 class Task {
-    constructor(name = "", status = 0, user = {id: -1}, story = {}) {
-        this.id = task_id++; // ID für nutzung in diesem Script
+    constructor(id = -1, name = "", status = 0, user = {id: -1}, story = {}) {
+        this.id = id;
         this.status = status;
         this.story = story;
         this.name = name;
@@ -55,15 +57,17 @@ class Task {
         this.status = cell.data("status");
         var new_story = Story.get(cell.parent().data("story"));
 
-        this.story.remove_task(this);
-        new_story.add_task(this);
+        if (new_story !== this.story) {
+            this.story.remove_task(this);
+            new_story.add_task(this);
+        }
     }
 
     edit() {
         editing_task = this;
 
-        $("#task-name").val(this.name);
-        $("#task-user").val(this.user.id);
+        $("#taskNameInput").val(this.name);
+        $("#taskUserSelect").val(this.user.id);
 
         $("#editTaskModal").modal({backdrop: 'static', keyboard: false});
     }
@@ -71,9 +75,8 @@ class Task {
     save() {
         unsaved_changes = true;
 
-        this.name = $("#task-name").val();
-
-        var user_id = $("#task-user").val();
+        this.name = $("#taskNameInput").val();
+        var user_id = $("#taskUserSelect").val();
 
         if (user_id === "-1") {
             this.user = {id: -1}
@@ -121,12 +124,13 @@ class Task {
 }
 
 class Story {
-    constructor(id, name = "", beschreibung = "", tasks = []) {
+    constructor(id, name = "", beschreibung = "", tasks = [], kriterien = []) {
         this.id = id || uuid();
         this.to_delete = false;
         this.titel = name;
         this.beschreibung = beschreibung;
         this.tasks = tasks;
+        this.kriterien = kriterien;
 
         // DOM Objekt erstellen und ID einfügen
         this.dom = $(story_template);
@@ -161,18 +165,26 @@ class Story {
     }
 
     remove_task(task) {
+        task.story = null;
+        this.tasks = this.tasks.filter(tsk => tsk !== task);
     }
 
     update_dom() {
         this.dom.find(".story-name").html(this.titel);
         this.dom.find(".story-beschreibung").html(this.beschreibung);
+
+        var kriterien_div = this.dom.find(".story-kriterien");
+        kriterien_div.html("");
+        this.kriterien.map(kriterium => {
+            kriterien_div.append(`<li>${kriterium.beschreibung}</li>`);
+        });
     }
 
     edit() {
         editing_story = this;
 
-        $("#story-titel").val(this.titel);
-        $("#story-beschreibung").val(this.beschreibung);
+        $("#storyTitleInput").val(this.titel);
+        $("#storyBeschreibungTextarea").val(this.beschreibung);
 
         $("#editStoryModal").modal({backdrop: 'static', keyboard: false});
     }
@@ -180,8 +192,8 @@ class Story {
     save() {
         unsaved_changes = true;
 
-        this.titel = $("#story-titel").val();
-        this.beschreibung = $("#story-beschreibung").val();
+        this.titel = $("#storyTitleInput").val();
+        this.beschreibung = $("#storyBeschreibungTextarea").val();
 
         taskboard.update_data();
     }
@@ -227,11 +239,11 @@ class TaskBoard {
 
                 /** @namespace data.stories */
                 for (var s of data.stories) {
-                    story = new Story(s.id, s.titel, s.beschreibung, s.tasks);
+                    story = new Story(s.id, s.titel, s.beschreibung, s.tasks, s.kriterien);
                     this.stories.push(story);
 
                     story.tasks = story.tasks.map(task => {
-                        return new Task(task.name, task.status, task.user, story);
+                        return new Task(task.id, task.name, task.status, task.user, story);
                     });
                 }
             }),
@@ -273,12 +285,12 @@ class TaskBoard {
                 // Error
                 return;
             }
-            var task = new Task("", 0, users[0], this.stories[0]);
+            var task = new Task(-1, "", 0, users[0], this.stories[0]);
             this.stories[0].tasks.push(task);
             task.edit();
         });
-        $("#task-save").click(() => editing_task.save());
-        $("#task-delete").click(() => editing_task.remove());
+        $("#editTaskModalSave").click(() => editing_task.save());
+        $("#editTaskModalDelete").click(() => editing_task.remove());
 
         /**
          * Story
@@ -291,8 +303,8 @@ class TaskBoard {
             story.edit();
             this.stories.push(story);
         });
-        $("#story-save").click(() => editing_story.save());
-        $("#story-delete").click(() => editing_story.remove());
+        $("#editStoryModalSave").click(() => editing_story.save());
+        $("#editStoryModalDelete").click(() => editing_story.remove());
 
 
         /**
