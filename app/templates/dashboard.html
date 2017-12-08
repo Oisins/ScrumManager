@@ -6,9 +6,11 @@
 
     {% if aktiver_sprint %}
         <script src="/static/js/moment.min.js"></script>
+        <script src="/static/js/moment.de.js"></script>
         <script src="/static/js/Chart.min.js"></script>
         <script>
             $(function () {
+                moment.locale("de");
                 $.getJSON("/api/burndown/{{ aktiver_sprint.id }}").done(function (data) {
                     var chart_container = $("#chartContainer");
                     if (data.error) {
@@ -47,6 +49,11 @@
                             ]
                         },
                         options: {
+                            elements: {
+                                line: {
+                                    tension: 0,
+                                }
+                            },
                             animation: {
                                 duration: 500
                             },
@@ -73,7 +80,8 @@
                                         labelString: "Unfertige Tasks"
                                     },
                                     ticks: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        stepSize: 1
                                     }
                                 }]
                             }
