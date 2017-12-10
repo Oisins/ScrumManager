@@ -1,0 +1,65 @@
+{% extends "base.html" %} {% block head %} {{ super() }}
+<link rel="stylesheet" href="/static/css/sprints.css"> {% endblock %} {% block body %}
+<div class="container mt-3 ">
+    <div class="panel p-3 mb-3">
+        <h4 class="panel-titel"><button class="btn btn-light" id="title" type="button">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button></h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">User</th>
+                    <th scope="col">Gemacht/Gut</th>
+                    <th scope="col">Zu tun/Schlecht</th>
+                    <th scope="col">Verbesserungen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>
+                        <button class="btn btn-light" id="user" type="button" data-toggle="modal" data-target="#bearbeitenModal"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                    </th>
+                    <td><button class="btn btn-light" id="antwort1" type="button">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button></td>
+                    <td><button class="btn btn-light" id="antwort2" type="button">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button></td>
+                    <td><button class="btn btn-light" id="antwort3" type="button">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button></td>
+                </tr>
+
+            </tbody>
+        </table>
+
+        <div class="panel-footer text-muted">
+            Vor 2 Tagen
+        </div>
+        
+    </div>
+</div>
+    <!--<form method="post">
+        <input type="hidden" name="neu" value="1">
+        <button type="submit" class="btn btn-light d-block m-auto p-3">
+                <i class="fa fa-plus d-block" aria-hidden="true"></i>-->
+                
+                
+                
+                
+    {% call forms.modal("bearbeiten", "Antwortbearbeitung", [["Löschen", False], ["save", False]], True) %}
+        <form method="post" id="form">
+            <input type="hidden" class="form-control" id="idInput" name="id">
+            <input type="hidden" class="form-control" id="deleteInput" name="delete" value="">
+            <div class="form-group mb-0">
+                <label for="rolleSelect">User</label>
+                <select class="form-control" id="rolleSelect" name="rolle">
+                    <option value="owner">John Doe</option>
+                    <option value="master">John Foe</option>
+                    <option value="team">John Goe</option>
+                </select>
+            </div>
+        </form>
+    {% endcall %}
+{% endblock %}
