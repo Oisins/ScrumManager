@@ -58,6 +58,7 @@ class Task {
         var new_story = Story.get(cell.parent().data("story"));
 
         if (new_story !== this.story) {
+            taskboard.unsaved_changes = true;
             this.story.remove_task(this);
             new_story.add_task(this);
         }
@@ -73,7 +74,7 @@ class Task {
     }
 
     save() {
-        unsaved_changes = true;
+        taskboard.unsaved_changes = true;
 
         this.name = $("#taskNameInput").val();
         var user_id = $("#taskUserSelect").val();
@@ -91,7 +92,7 @@ class Task {
     }
 
     remove() {
-        unsaved_changes = true;
+        taskboard.unsaved_changes = true;
 
         this.delete = true;
 
@@ -142,8 +143,6 @@ class Story {
 
         this.dom.find("td[data-status]").droppable({
             drop: function (event, ui) {
-                unsaved_changes = true;
-
                 ui.draggable.trigger("task_drop", [$(this)]);
             },
             deactivate: function (event, ui) {
@@ -190,7 +189,7 @@ class Story {
     }
 
     save() {
-        unsaved_changes = true;
+        taskboard.unsaved_changes = true;
 
         this.titel = $("#storyTitleInput").val();
         this.beschreibung = $("#storyBeschreibungTextarea").val();
@@ -199,7 +198,7 @@ class Story {
     }
 
     remove() {
-        unsaved_changes = true;
+        taskboard.unsaved_changes = true;
         this.to_delete = true;
 
         for (var task of this.tasks) {
@@ -224,7 +223,8 @@ class Story {
 class TaskBoard {
     constructor(sprint_id) {
         this.stories = [];
-        this.sprint_id = sprint_id
+        this.sprint_id = sprint_id;
+        this._unsaved_changes = false;
 
     }
 
@@ -271,6 +271,21 @@ class TaskBoard {
                 task.update_dom();
             }
         }
+
+    }
+
+
+    set unsaved_changes(val) {
+        this._unsaved_changes = val;
+        if (val) {
+            var speichern = $("#speichern");
+            speichern.removeClass("btn-outline-success");
+            speichern.addClass("btn-warning");
+        }
+    }
+
+    get unsaved_changes() {
+        return this._unsaved_changes;
     }
 
     bind_listeners() {
@@ -323,6 +338,11 @@ class TaskBoard {
             // Form abschicken
             $(this).parent().submit();
         });
+
+        $("#sprint-form").find("input,textarea").on('change input propertychange paste', () => {
+            console.log("CHANGE");
+            taskboard.unsaved_changes = true;
+        });
     }
 }
 
@@ -352,7 +372,7 @@ $(function () {
 
     // Warnung für nicht gespeicherte Daten
     $(window).bind("beforeunload", function () {
-        if (unsaved_changes) return true; // Ja, muss so sein
+        if (taskboard.unsaved_changes) return true; // Ja, muss so sein
     });
 });
 
