@@ -1,23 +1,202 @@
 {% extends "base.html" %}
+{% macro antwort_dom() %}
+    <tr>
+        <td class="user">{# User #}</td>
+        <td class="antwort1">{# Gut #}</td>
+        <td class="antwort2">{# Zu Tun #}</td>
+        <td class="antwort3">{# Schlecht #}</td>
+        <td>{{ forms.edit_button() }}</td>
+    </tr>
+{% endmacro %}
 {% block head %}
     {{ super() }}
-    <link rel="stylesheet" href="/static/css/sprints.css">
+    <script>
+        var table;
+        var form;
+        var meeting;
+        var data_input;
+        var users = [{% for u in users %}{{ u.json() | tojson }}, {% endfor %}];
+        var editing_antwort;
+
+        function get_user(id) {
+            return users.filter(user => user.id + "" === id)[0] || {};
+        }
+
+        class Meeting {
+            constructor(datum, typ, antworten) {
+                this.datum = datum;
+                this.typ = typ;
+                this.antworten = antworten;
+                this._unsaved_changes = false;
+            }
+
+            add_antwort() {
+                var antwort = new Antwort();
+                antwort.edit();
+                this.antworten.push(antwort);
+            }
+
+            set unsaved_changes(val) {
+                this._unsaved_changes = val;
+                if (val) {
+                    var speichern = $("#speichern");
+                    speichern.removeClass("btn-outline-success");
+                    speichern.addClass("btn-warning");
+                }
+            }
+
+            get unsaved_changes() {
+                return this._unsaved_changes;
+            }
+
+            submit() {
+                // Warnung ausschalten
+                this.unsaved_changes = false;
+
+                var data = this.antworten.map(antwort => antwort.to_json());
+
+                // Daten in hidden input einfügen
+                data_input.val(JSON.stringify(data));
+
+                // Form abschicken
+                form.submit();
+            }
+
+            to_json() {
+                return {
+                    "beschreibung": this.beschreibung
+                }
+            }
+        }
+
+        class Antwort {
+            constructor(id = -1, user = users[0], antwort1 = "", antwort2 = "", antwort3 = "") {
+                this.id = id;
+                this.to_delete = false;
+                this.user = user;
+                this.antwort1 = antwort1;
+                this.antwort2 = antwort2;
+                this.antwort3 = antwort3;
+
+                this.dom = $(`{{ antwort_dom() }}`);
+                this.dom.find(".editButton").click(() => this.edit());
+                this.update_dom();
+                table.find("tbody").last().before(this.dom);
+            }
+
+            edit() {
+                editing_antwort = this;
+                $("#antwort1Input").val(this.antwort1);
+                $("#antwort2Input").val(this.antwort2);
+                $("#antwort3Input").val(this.antwort3);
+                $("#userSelect").val(this.user.id);
+
+
+                $("#bearbeitenModal").modal({backdrop: 'static', keyboard: false});
+            }
+
+            save() {
+                meeting.unsaved_changes = true;
+                var user_id = $("#userSelect").val();
+                var user = get_user(user_id);
+                if (user) {
+                    this.user = user;
+                }
+
+                this.antwort1 = $("#antwort1Input").val();
+                this.antwort2 = $("#antwort2Input").val();
+                this.antwort3 = $("#antwort3Input").val();
+
+                this.update_dom();
+            }
+
+            remove() {
+                this.to_delete = true;
+                this.dom.remove();
+            }
+
+            update_dom() {
+                this.dom.find(".user").html(this.user.name);
+                this.dom.find(".antwort1").html(this.antwort1);
+                this.dom.find(".antwort2").html(this.antwort2);
+                this.dom.find(".antwort3").html(this.antwort3);
+            }
+
+            to_json() {
+                return {
+                    "id": this.id,
+                    "to_delete": this.to_delete,
+                    "antwort1": this.antwort1,
+                    "antwort2": this.antwort2,
+                    "antwort3": this.antwort3,
+                    "user": this.user
+                }
+            }
+        }
+
+        $(() => {
+            // "Laden..." anzeigen
+            table = $("#antworten");
+            form = $("#meeting-form");
+            data_input = form.children().first();
+
+            $("input.date-input").datepicker({dateFormat: "dd.mm.yy"});
+            $("#bearbeitenModalSave").click(() => editing_antwort.save());
+            $("#bearbeitenModalDelete").click(() => editing_antwort.remove());
+            $("#addButton").click(() => meeting.add_antwort());
+            $("#speichern").click(() => meeting.submit());
+            $(window).bind("beforeunload", function () {
+                if (meeting.unsaved_changes) return true; // Ja, muss so sein
+            });
+            form.find("input,select").on('change input propertychange paste', () => {
+                meeting.unsaved_changes = true;
+            });
+
+            var data = JSON.parse(`{{ meeting.json() | tojson }}`);
+            var antworten = data.antworten.map(a => new Antwort(a.id, a.user, a.antwort1, a.antwort2, a.antwort3));
+            meeting = new Meeting(data.id, data.typ, antworten);
+        });
+    </script>
 {% endblock %}
 {% block body %}
-    <div class="container mt-3 ">
+    <div class="container mt-3">
         <div class="panel">
             <div class="panel-body">
-                <div class="panel-titel d-flex justify-content-between align-items-start">
-                    <div>
-                        <h4>Meeting {{ meeting.datum }}</h4>
-                        <div class="text-muted">{{ meeting.typ }}</div>
+                <div class="row mb-2">
+                    <h3 class="col-10">Meeting</h3>
+                    <div class="col">
+                        <input type="hidden" id="data-input" name="data">
+                        <button class="btn btn-outline-success col" id="speichern">Speichern</button>
                     </div>
-                    <button class="btn btn-light" id="title" type="button">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
                 </div>
-
-                <table class="table table-bordered table-sm">
+                <form method="post" id="meeting-form">
+                    <input type="hidden" name="antworten" value="">
+                    <div class="form-group row">
+                        <label for="datum" class="col-2 col-form-label">Datum</label>
+                        <div class="col-10">
+                            <input class="form-control date-input" id="datum" name="datum"
+                                   value="{{ meeting.datum }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        {% set selected = meeting.typ %}
+                        {% macro option(display, value) %}
+                            <option value="{{ value }}"
+                                    {% if value==selected %}selected{% endif %}>{{ display }}</option>
+                        {% endmacro %}
+                        <label for="typSelect" class="col-2 col-form-label">Typ</label>
+                        <div class="col-10">
+                            <select class="form-control" id="typSelect" name="typ">
+                                {{ option("Daily", "daily") }}
+                                {{ option("Review", "review") }}
+                                {{ option("Retrospektive", "retrospektive") }}
+                                {{ option("Sonstiges", "sonstiges") }}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                <h5 class="mt-4">Antworten</h5>
+                <table class="table table-bordered table-sm" id="antworten">
                     <tr>
                         <th>User</th>
                         <th>Gemacht/Gut</th>
@@ -25,37 +204,30 @@
                         <th>Verbesserungen</th>
                         <th></th>
                     </tr>
-                    {% for antwort in meeting.antworten %}
-                        <tr>
-                            <td>{{ antwort.user.name }}</td>
-                            <td>{{ antwort.antwort1 }}</td>
-                            <td>{{ antwort.antwort2 }}</td>
-                            <td>{{ antwort.antwort3 }}</td>
-                            <td class="text-center">{{ forms.edit_button() }}</td>
-                        </tr>
-                    {% endfor %}
+
+                    <tbody>
                     <tr>
                         <td colspan="5" class="text-center">
                             {{ forms.add_button("add") }}
                         </td>
                     </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    {% call forms.modal("bearbeiten", "Antwortbearbeitung", [["Löschen", False], ["save", False]], True) %}
-        <form method="post" id="form">
-            <input type="hidden" class="form-control" id="idInput" name="id">
-            <input type="hidden" class="form-control" id="deleteInput" name="delete" value="">
-            <div class="form-group mb-0">
-                <label for="rolleSelect">User</label>
-                <select class="form-control" id="rolleSelect" name="rolle">
-                    <option value="owner">John Doe</option>
-                    <option value="master">John Foe</option>
-                    <option value="team">John Goe</option>
-                </select>
-            </div>
-        </form>
+    {% call forms.modal("bearbeiten", "Antwortbearbeitung", [["delete", True], ["save", True]], False) %}
+        {{ forms.input("antwort1", "Gut") }}
+        {{ forms.input("antwort2", "ToDo") }}
+        {{ forms.input("antwort3", "Schlecht") }}
+        <div class="form-group mb-0">
+            <label for="userSelect">User</label>
+            <select class="form-control" id="userSelect" name="user">
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
     {% endcall %}
 {% endblock %}

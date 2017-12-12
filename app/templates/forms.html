@@ -19,6 +19,20 @@
     </div>
 {% endmacro %}
 
+{% macro add_button(id, type="button", size=2) %}
+    <button type="{{ type }}" class="btn btn-light p-{{ size }}" id="{{ id }}Button">
+        <i class="fa fa-plus d-block" aria-hidden="true"></i>
+    </button>
+{% endmacro %}
+
+{% macro edit_button(id="", type="button", size=2) %}
+    <button type="{{ type }}"
+            class="btn btn-light p-{{ size }} editButton"
+            {% if id %}id="{{ id }}Button"{% endif %}>
+        <i class="fa fa-pencil d-block" aria-hidden="true"></i>
+    </button>
+{% endmacro %}
+
 {% macro modal(id, titel, buttons, closable=False) %}
     {# buttons = [["close", True], ...] => button "close" can close dialog #}
     <div class="modal" id="{{ id }}Modal">

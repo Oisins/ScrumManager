@@ -269,7 +269,7 @@ class Meeting(db.Model):
         return {"id": self.id,
                 "antworten": [antwort.json() for antwort in self.antworten],
                 "typ": self.typ,
-                "iso_datum": self._datum.strftime('%Y-%m-%d'),
+                "iso_datum": self._datum.strftime('%Y-%m-%d') if self._datum else "",
                 "datum": self.datum}
 
 
@@ -279,5 +279,13 @@ class Antwort(db.Model):
     antwort1 = db.Column(db.String(500), default="")
     antwort2 = db.Column(db.String(500), default="")
     antwort3 = db.Column(db.String(500), default="")
+    typ = db.Column(db.String(50), default="sonstiges")
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
     meeting_id = db.Column(db.Integer, db.ForeignKey('Meeting.id'))
+
+    def json(self):
+        return {"id": self.id,
+                "antwort1": self.antwort1,
+                "antwort2": self.antwort2,
+                "antwort3": self.antwort3,
+                "user": self.user.json()}

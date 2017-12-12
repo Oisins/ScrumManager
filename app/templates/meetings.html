@@ -3,6 +3,11 @@
     {{ super() }}
     <link rel="stylesheet" href="/static/css/meetings.css">
     <link rel="stylesheet" href="/static/css/fullcalendar.min.css">
+    <style>
+        a:hover {
+            text-decoration-line: none;
+        }
+    </style>
 
     <script src="/static/js/moment.min.js"></script>
     <script src="/static/js/fullcalendar.min.js"></script>
@@ -10,9 +15,7 @@
     <script>
         var events = [];
         $(() => {
-            // "Laden..." anzeigen
             container = $("#meetings");
-            //$("#add-kriterium").click(() => editing_story.add_kriterium());
 
             $.getJSON("/api/meetings").done(data => {
 
@@ -24,7 +27,7 @@
                     });
                 }
                 $("#loading").remove();
-                console.log(events);
+                $("#meeting-list").removeClass("hide");
 
                 // page is now ready, initialize the calendar...
                 $('#calendar').fullCalendar({
@@ -39,8 +42,7 @@
     </script>
 {% endblock %}
 {% block body %}
-    <div class="container mt-3" id="container">
-
+    <div class="container my-3" id="container">
         <div class="panel">
             <div class="panel-body">
                 <div id="calendar"></div>
@@ -51,30 +53,32 @@
             <div class="panel-head">
                 <h3>Meetings</h3>
             </div>
-            <div class="panel-body">
-                {% for meeting in meetings %}
-                    <div class="panel mb-3">
-                        <div class="panel-body">
-                            <div class="panel-titel mb-0 d-flex justify-content-between">
-                                <a href="/meetings/{{ meeting.id }}"><h4>{{ meeting.datum }}</h4></a>
-                                <button class="float-right btn btn-light edit-story" type="button">
-                                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                                </button>
+            <div class="panel-body pb-0">
+                <div class="hide" id="meeting-list">
+                    {% for meeting in meetings %}
+                        <a href="/meetings/{{ meeting.id }}">
+                            <div class="panel mb-3">
+                                <div class="panel-body">
+                                    <div class="panel-titel mb-0">
+                                        <h4>{{ meeting.datum }}</h4>
+                                    </div>
+                                    <span class="text-muted">{{ meeting.typ | title }}</span>
+                                </div>
                             </div>
-                            <span class="text-muted">{{ meeting.typ }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="panel-footer">
-                <div class="text-center" id="loading">
-                    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-                    <div class="text-muted text-center">Lädt...</div>
+                        </a>
+                    {% endfor %}
                 </div>
+            </div>
 
-                <button type="submit" class="btn btn-light d-block m-auto p-3">
+            <div class="text-center" id="loading">
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+                <div class="text-muted text-center">Lädt...</div>
+            </div>
+
+            <div class="panel-footer text-center">
+                <a href="/meetings/neu" class="btn btn-light p-2">
                     <i class="fa fa-plus d-block" aria-hidden="true"></i>
-                </button>
+                </a>
             </div>
         </div>
     </div>

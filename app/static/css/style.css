@@ -61,4 +61,10 @@ body {
     border-top: 1px solid var(--border-light);
 }
 
+.fc-event, .fc-event:hover {
+    color: white !important;
+}
 
+.hide {
+    display: none;
+}
