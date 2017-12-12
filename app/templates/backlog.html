@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 {% macro story_panel() %}
-    <div class="panel d-flex flex-column">
-        <div class="panel-title d-flex justify-content-between">
-            <h4 class="story-titel"></h4>
-            <button class="btn btn-light story-edit" type="button">
-                <i class="fa fa-pencil" aria-hidden="true"></i>
-            </button>
-        </div>
-        <p class="card-text story-beschreibung"></p>
-        <h6>Akzeptanzkriterien:</h6>
-        <ul class="list-group kriterien mb-2">
-        </ul>
+    <div class="panel">
+        <div class="panel-body d-flex flex-column">
+            <div class="panel-title d-flex justify-content-between align-items-start">
+                <h4 class="story-titel"></h4>
+                <button class="btn btn-light story-edit" type="button">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </button>
+            </div>
+            <p class="card-text story-beschreibung"></p>
+            <h6>Akzeptanzkriterien:</h6>
+            <ul class="list-group kriterien mb-2">
+            </ul>
 
-        <a href="#" class="mt-auto story-link"></a>
+            <a href="#" class="mt-auto story-link"></a>
+        </div>
     </div>
 {% endmacro %}
 {% macro kriterium_dom() %}

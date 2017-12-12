@@ -54,28 +54,30 @@
         </div>
         {% for user in users %}
             <div class="panel">
-                <button class="btn btn-light float-right" type="button"
-                        data-target="#bearbeitenModal"
-                        data-toggle="modal"
-                        data-id="{{ user.id }}"
-                        data-name="{{ user.name }}"
-                        data-rolle="{{ user.rolle }}">
-                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                </button>
-                <h4 class="card-title">{{ user.name }}</h4>
-                <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle | title }}</h6>
-                <div class="my-1">
-                    <div>
-                        <i class="fa fa-list text-danger" aria-hidden="true"></i>
-                        {{ user.tasks_nach_status(0) | length }}
-                    </div>
-                    <div>
-                        <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
-                        {{ user.tasks_nach_status(1) | length }}
-                    </div>
-                    <div>
-                        <i class="fa fa-check text-success" aria-hidden="true"></i>
-                        {{ user.tasks_nach_status(2) | length }}
+                <div class="panel-body">
+                    <button class="btn btn-light float-right" type="button"
+                            data-target="#bearbeitenModal"
+                            data-toggle="modal"
+                            data-id="{{ user.id }}"
+                            data-name="{{ user.name }}"
+                            data-rolle="{{ user.rolle }}">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                    </button>
+                    <h4 class="card-title">{{ user.name }}</h4>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ user.rolle | title }}</h6>
+                    <div class="my-1">
+                        <div>
+                            <i class="fa fa-list text-danger" aria-hidden="true"></i>
+                            {{ user.tasks_nach_status(0) | length }}
+                        </div>
+                        <div>
+                            <i class="fa fa-cogs text-warning" aria-hidden="true"></i>
+                            {{ user.tasks_nach_status(1) | length }}
+                        </div>
+                        <div>
+                            <i class="fa fa-check text-success" aria-hidden="true"></i>
+                            {{ user.tasks_nach_status(2) | length }}
+                        </div>
                     </div>
                 </div>
             </div>

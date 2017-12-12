@@ -2,14 +2,13 @@
  *   Theme
  */
 :root {
-	--main-background-color: #ecf0f1;
-	--border-light: rgba(0,0,0,.125);
-	--border-highlight: #17a2b8;
-	--border-dark: rgba(0, 0, 0, 0.32);
-	--navbar: #2c3e50;
-	--navbar-highlight: #34495e;
+    --main-background-color: #ecf0f1;
+    --border-light: rgba(0, 0, 0, .125);
+    --border-highlight: #17a2b8;
+    --border-dark: rgba(0, 0, 0, 0.32);
+    --navbar: #2c3e50;
+    --navbar-highlight: #34495e;
 }
-
 
 /*
  *   Style
@@ -31,16 +30,35 @@ body {
     background-color: var(--navbar-highlight) !important;
 }
 
-
 /*
  *   Komponenten
  */
 .panel {
     border: 1px solid var(--border-light);
     background-color: #FFF;
-    padding: 1rem;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
 .panel-titel {
     margin-bottom: .75rem;
 }
+
+.panel-head {
+    padding: 1em 1em 0.5em 1em;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.panel-body {
+    padding: 1rem;
+    flex: 1;
+}
+
+.panel-footer {
+    padding: 0.5em;
+    border-top: 1px solid var(--border-light);
+}
+
+
