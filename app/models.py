@@ -15,6 +15,7 @@ class User(db.Model, UserMixin):
     rolle = db.Column(db.String(30), default="team")
     tasks = db.relationship('Task', backref=db.backref('user', lazy=True))
     impediments = db.relationship('Impediment', backref=db.backref('user', lazy=True))
+    antworten = db.relationship('Antwort', backref=db.backref('user', lazy=True))
 
     def tasks_nach_status(self, status):
         return Task.query.filter_by(status=status, user_id=self.id).all()
@@ -66,7 +67,8 @@ class Story(db.Model):
     tasks = db.relationship('Task', backref='story', lazy='dynamic', cascade="all, delete-orphan")
     kriterien = db.relationship('Kriterium', backref=db.backref('story', lazy=True))
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
         self.id = str(uuid4())
 
     def nach_status(self, status):
@@ -95,6 +97,7 @@ class Kriterium(db.Model):
 class Sprint(db.Model):
     __tablename__ = 'Sprint'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    ziel = db.Column(db.String(500), default="")
     _start = db.Column("start", db.Date)
     _ende = db.Column("end", db.Date)
 
@@ -240,3 +243,41 @@ class ImpedimentStatus(db.Model):
             self._datum = datetime.strptime(value, "%d.%m.%Y").date()
         except ValueError:
             self._datum = None
+
+
+class Meeting(db.Model):
+    __tablename__ = "Meeting"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    antworten = db.relationship('Antwort', backref=db.backref('meeting', lazy=True))
+    _datum = db.Column("datum", db.Date)
+    typ = db.Column(db.String(50))
+
+    @property
+    def datum(self):
+        if self._datum:
+            return self._datum.strftime('%d.%m.%Y')
+        return ""
+
+    @datum.setter
+    def datum(self, value):
+        try:
+            self._datum = datetime.strptime(value, "%d.%m.%Y").date()
+        except ValueError:
+            self._datum = None
+
+    def json(self):
+        return {"id": self.id,
+                "antworten": [antwort.json() for antwort in self.antworten],
+                "typ": self.typ,
+                "iso_datum": self._datum.strftime('%Y-%m-%d'),
+                "datum": self.datum}
+
+
+class Antwort(db.Model):
+    __tablename__ = "Antwort"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    antwort1 = db.Column(db.String(500), default="")
+    antwort2 = db.Column(db.String(500), default="")
+    antwort3 = db.Column(db.String(500), default="")
+    user_id = db.Column(db.Integer, db.ForeignKey('User.id'))
+    meeting_id = db.Column(db.Integer, db.ForeignKey('Meeting.id'))

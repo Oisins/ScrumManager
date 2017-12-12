@@ -4,27 +4,31 @@
     <link rel="stylesheet" href="/static/css/sprints.css">
 {% endblock %}
 {% block body %}
-    <div class="container mt-3">
+    <div class="container">
         {% for sprint in sprints %}
-            <div class="panel p-3 mb-3 {% if sprint.aktiv %}border border-info{% endif %}">
-                <span class="dauer p-2 rounded">{{ sprint.status_desc() }}</span>
-                <h4 class="panel-titel">Sprint {{ sprint.id }}</h4>
+            <div class="panel mt-3 {% if sprint.aktiv %}border border-info{% endif %}">
+                <div class="panel-body p-4">
+                    <span class="dauer p-2 rounded">{{ sprint.status_desc() }}</span>
+                    <h4 class="panel-titel">
+                        Sprint {{ sprint.id }}
 
-                <p>
-                    Start: {{ sprint.start }}<br>
-                    Ende: {{ sprint.ende }}
-                </p>
-                <a href="/sprints/{{ sprint.id }}" class="btn btn-primary">Details</a>
-                <div class="status mt-3 p-2">
-                <span>
-                    <i class="fa fa-list text-danger" aria-hidden="true"></i> {{ sprint.anzahl_status(0) }}
-                </span>
+                    </h4>
+                    <p>{{ sprint.start }} bis {{ sprint.ende }}</p>
+                    <p>
+                        {{- sprint.ziel -}}
+                    </p>
+                    <a href="/sprints/{{ sprint.id }}" class="btn btn-primary">Details</a>
+                </div>
+                <div class="panel-footer status">
                     <span>
-                    <i class="fa fa-cogs text-warning" aria-hidden="true"></i> {{ sprint.anzahl_status(1) }}
-                </span>
+                        <i class="fa fa-list text-danger" aria-hidden="true"></i> {{ sprint.anzahl_status(0) }}
+                    </span>
                     <span>
-                    <i class="fa fa-check text-success" aria-hidden="true"></i> {{ sprint.anzahl_status(2) }}
-                </span>
+                        <i class="fa fa-cogs text-warning" aria-hidden="true"></i> {{ sprint.anzahl_status(1) }}
+                    </span>
+                    <span>
+                        <i class="fa fa-check text-success" aria-hidden="true"></i> {{ sprint.anzahl_status(2) }}
+                    </span>
                 </div>
             </div>
         {% endfor %}
