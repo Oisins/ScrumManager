@@ -1,53 +1,49 @@
-{% extends "base.html" %} {% block head %} {{ super() }}
-<link rel="stylesheet" href="/static/css/sprints.css"> {% endblock %} {% block body %}
-<div class="container mt-3 ">
-    <div class="panel p-3 mb-3">
-        <h4 class="panel-titel"><button class="btn btn-light" id="title" type="button">
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/sprints.css">
+{% endblock %}
+{% block body %}
+    <div class="container mt-3 ">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="panel-titel d-flex justify-content-between align-items-start">
+                    <div>
+                        <h4>Meeting {{ meeting.datum }}</h4>
+                        <div class="text-muted">{{ meeting.typ }}</div>
+                    </div>
+                    <button class="btn btn-light" id="title" type="button">
                         <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button></h4>
+                    </button>
+                </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">User</th>
-                    <th scope="col">Gemacht/Gut</th>
-                    <th scope="col">Zu tun/Schlecht</th>
-                    <th scope="col">Verbesserungen</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>
-                        <button class="btn btn-light" id="user" type="button" data-toggle="modal" data-target="#bearbeitenModal"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                    </th>
-                    <td><button class="btn btn-light" id="antwort1" type="button">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button></td>
-                    <td><button class="btn btn-light" id="antwort2" type="button">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button></td>
-                    <td><button class="btn btn-light" id="antwort3" type="button">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button></td>
-                </tr>
-
-            </tbody>
-        </table>
-
-        <div class="panel-footer text-muted">
-            Vor 2 Tagen
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <th>User</th>
+                        <th>Gemacht/Gut</th>
+                        <th>Zu tun/Schlecht</th>
+                        <th>Verbesserungen</th>
+                        <th></th>
+                    </tr>
+                    {% for antwort in meeting.antworten %}
+                        <tr>
+                            <td>{{ antwort.user.name }}</td>
+                            <td>{{ antwort.antwort1 }}</td>
+                            <td>{{ antwort.antwort2 }}</td>
+                            <td>{{ antwort.antwort3 }}</td>
+                            <td class="text-center">{{ forms.edit_button() }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            {{ forms.add_button("add") }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
-        
     </div>
-</div>
-    <!--<form method="post">
-        <input type="hidden" name="neu" value="1">
-        <button type="submit" class="btn btn-light d-block m-auto p-3">
-                <i class="fa fa-plus d-block" aria-hidden="true"></i>-->
-                
-                
-                
-                
+
     {% call forms.modal("bearbeiten", "Antwortbearbeitung", [["Löschen", False], ["save", False]], True) %}
         <form method="post" id="form">
             <input type="hidden" class="form-control" id="idInput" name="id">

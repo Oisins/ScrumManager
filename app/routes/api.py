@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Blueprint, jsonify, redirect, request
-from app.models import Task, User, Story, Sprint, db
+from app.models import Task, User, Story, Sprint, Meeting, db
 
 api_blueprint = Blueprint('api', __name__, url_prefix="/api")
 
@@ -17,6 +17,12 @@ def api_get_users():
     return jsonify([user.json() for user in users])
 
 
+@api_blueprint.route("/meetings")
+def api_meetings():
+    meetings = Meeting.query.all()
+    return jsonify([meeting.json() for meeting in meetings])
+
+
 @api_blueprint.route("/newuser", methods=["POST"])
 def api_new_user():
     user = User()
@@ -29,19 +35,19 @@ def api_new_user():
 
 
 @api_blueprint.route("/stories")
-def get_stories():
+def api_stories():
     stories = Story.query.all()
     return jsonify([story.json() for story in stories])
 
 
 @api_blueprint.route("/sprint/<s_id>")
-def get_sprint(s_id):
+def api_sprint(s_id):
     sprint = Sprint.query.get(s_id)
     return jsonify(sprint.json())
 
 
 @api_blueprint.route("/burndown/<s_id>")
-def burndown_data(s_id):
+def api_burndown_data(s_id):
     sprint = Sprint.query.get(s_id)
     if not sprint:
         return jsonify({"error": "Sprint nicht gefunden"})
@@ -57,7 +63,7 @@ def burndown_data(s_id):
 
     data[sprint._start.strftime('%Y-%m-%d')] = anzahl_unfertig
     for task in tasks:
-        if not task.fertig_datum:
+        if not task.fertig_datum or task.status != 2:
             continue
         datum_formatiert = task._fertig_datum.strftime('%Y-%m-%d')
         anzahl_unfertig -= 1
