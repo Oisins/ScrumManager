@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="/static/css/impediment.css">
+
+    <script>
+        $(() => {
+            var modal;
+            var form = $("#form");
+            $("#bearbeitenModal").on("show.bs.modal", function (event) {
+                var button = $(event.relatedTarget);
+
+                var id = button.data("id");
+                var beschreibung = button.data("beschreibung") || "";
+                var status = button.data("status") || "";
+                var verantwortlich = button.data("verantwortlich") || "";
+                var behandlung = button.data("behandlung") || "";
+                var prio = button.data("prio") || "hoch";
+
+                modal = $(this);
+
+                modal.find("#idInput").val(id);
+                if (id === -1) {
+                    modal.find("#delete").hide();
+                    modal.find(".modal-title").text("Neues Impediment");
+                } else {
+                    modal.find("#delete").show();
+                    modal.find(".modal-title").text("Impediment Bearbeiten" + name);
+
+                    modal.find("#beschreibungTextarea").val(beschreibung);
+                    modal.find("#statusInput").val(status);
+                    modal.find("#verantwortlichInput").val(verantwortlich);
+                    modal.find("#behandlungInput").val(behandlung);
+                    modal.find("#prioSelect").val(prio);
+                }
+            });
+            $("#bearbeitenModalDelete").click(() => {
+                modal.find("#deleteInput").val("True");
+                form.submit();
+            });
+            $("#bearbeitenModalSave").click(() => {
+                form.submit();
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="container my-3 p-3 bg-white">
+        <table class="table table-bordered table-sm mb-0" id="taskboard">
+            <thead>
+            <tr>
+                <th class="text-center">Datum</th>
+                <th class="text-center">Impediment</th>
+                <th class="text-center">Ersteller</th>
+                <th class="text-center">Status</th>
+                <th class="text-center">Priorität</th>
+                <th class="text-center">Verantwortlich</th>
+                <th class="text-center">Behandlung</th>
+                <th class="text-center"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for impediment in impediments %}
+                <tr>
+                    <td>{{ impediment.datum }}</td>
+                    <td>{{ impediment.beschreibung }}</td>
+                    <td>{% if impediment.user %}{{ impediment.user.name }}{% else %}Nicht zugewiesen{% endif %}</td>
+                    <td>
+                        {% for status in impediment.status %}
+                            {{ status.datum }} - {{ status.status }}<br>
+                        {% endfor %}
+                    </td>
+                    <td>{{ impediment.prio | title }}</td>
+                    <td>{{ impediment.verantwortlich }}</td>
+                    <td>{{ impediment.behandlung }}</td>
+                    <td>
+                        <button class="btn btn-light float-right" type="button"
+                                data-target="#bearbeitenModal"
+                                data-toggle="modal"
+                                data-id="{{ impediment.id }}"
+                                data-beschreibung="{{ impediment.beschreibung }}"
+                                data-status="{{ impediment.status[-1].status }}"
+                                data-prio="{{ impediment.prio }}"
+                                data-verantwortlich="{{ impediment.verantwortlich }}"
+                                data-behandlung="{{ impediment.behandlung }}">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="8" class="text-center">
+                    <button class="btn btn-light" type="button"
+                            data-target="#bearbeitenModal"
+                            data-toggle="modal"
+                            data-id="-1">
+                        <i class="fa fa-plus" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        {% call forms.modal("bearbeiten", "Impediment bearbeiten", [["delete", True], ["save", True]], True) %}
+            <form method="post" id="form">
+                <input type="hidden" name="id" id="idInput">
+                {{ forms.textarea("beschreibung", "Beschreibung") }}
+                {{ forms.input("status", "Status") }}
+                <div class="form-group">
+                    {% macro option(display, value) %}
+                        <option value="{{ value }}">{{ display }}</option>
+                    {% endmacro %}
+                    <label for="prioSelect">Priorität</label>
+                    <select class="form-control" id="prioSelect" name="prio">
+                        {{ option("Hoch", "hoch") }}
+                        {{ option("Mittel", "mittel") }}
+                        {{ option("Niedrig", "niedrig") }}
+                    </select>
+                </div>
+                {{ forms.input("verantwortlich", "Verantwortlich") }}
+                {{ forms.input("behandlung", "Behandlung") }}
+            </form>
+        {% endcall %}
+    </div>
+{% endblock %}

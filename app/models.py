@@ -189,7 +189,7 @@ class Impediment(db.Model):
     _datum = db.Column(db.DateTime)
 
     def __init__(self):
-        self.datum = datetime.now()
+        self._datum = datetime.now()
         self.status = 0
         self.user = current_user
 
@@ -199,24 +199,18 @@ class Impediment(db.Model):
             return ""
         return self._datum.strftime('%d.%m.%Y')
 
-    @datum.setter
-    def datum(self, value):
-        try:
-            self._datum = datetime.strptime(value, "%d.%m.%Y").date()
-        except ValueError:
-            self._datum = None
-
     @property
     def status(self):
         return self._status
 
     @status.setter
     def status(self, wert):
-        s = ImpedimentStatus(status=wert)
-        s.status = wert
-        self._status.append(s)
-        db.session.add(s)
-        db.session.commit()
+        if not self.status or wert != self.status[-1].status:
+            s = ImpedimentStatus(status=wert)
+            s.status = wert
+            self._status.append(s)
+            db.session.add(s)
+            db.session.commit()
 
 
 class ImpedimentStatus(db.Model):
@@ -224,11 +218,11 @@ class ImpedimentStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     impediment_id = db.Column(db.Integer, db.ForeignKey('Impediment.id'))
 
-    status = db.Column(db.Integer)
+    status = db.Column(db.String(100))
     _datum = db.Column(db.DateTime)
 
     def __init__(self, **kwargs):
-        super(**kwargs)
+        super().__init__(**kwargs)
         self._datum = datetime.now()
 
     @property
