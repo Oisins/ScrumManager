@@ -51,10 +51,13 @@ def create_app(config_name):
             return redirect("/"), 403
         return render_template('404.html'), 404
 
-    for filename in find_modules('app.routes'):
+    '''for filename in find_modules('app.routes'):
         mod = import_string(filename)
         if hasattr(mod, 'blueprint'):
-            app.register_blueprint(mod.blueprint)
+            app.register_blueprint(mod.blueprint)'''
+
+    for blueprint in routes.blueprints:
+        app.register_blueprint(blueprint)
 
     register_processors(app)
 

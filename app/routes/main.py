@@ -26,8 +26,15 @@ def seite_backlog_post():
     data = json.loads(request.form.get("data"))
     story = Story.query.get(data.get("id"))
     sprint_id = data.get("sprint_id", "-1")
-    if not story:
+    if data.get("to_delete"):
+        if story:
+            db.session.delete(story)
+            db.session.commit()
         return redirect("/backlog")
+
+    if not story:
+        story = Story()
+        db.session.add(story)
 
     story.titel = data.get("titel")
     story.beschreibung = data.get("beschreibung")
@@ -54,8 +61,9 @@ def seite_users():
     user = User.query.get(request.form.get("id"))
 
     if request.form.get("delete", False):
-        db.session.delete(user)
-        db.session.commit()
+        if user:
+            db.session.delete(user)
+            db.session.commit()
         return redirect("/users")
 
     if not user:
@@ -95,9 +103,10 @@ def seite_impediment_post():
 
     impediment = Impediment.query.get(impediment_id)
 
-    if request.form.get("delete", False):
-        db.session.delete(impediment)
-        db.session.commit()
+    if request.form.get("to_delete", False):
+        if impediment:
+            db.session.delete(impediment)
+            db.session.commit()
         return redirect("/impediment")
 
     if not impediment:

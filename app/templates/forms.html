@@ -19,7 +19,7 @@
     </div>
 {% endmacro %}
 
-{% macro add_button(id, type="button", size=2) %}
+{% macro add_button(id="add", type="button", size=2) %}
     <button type="{{ type }}" class="btn btn-light p-{{ size }}" id="{{ id }}Button">
         <i class="fa fa-plus d-block" aria-hidden="true"></i>
     </button>

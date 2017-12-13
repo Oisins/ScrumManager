@@ -27,7 +27,8 @@ def seite_sprint_post(sprint_id):
     for story_data in json.loads(request.form.get("data")):
         story = Story.query.get(story_data.get("id"))
         if story_data.get("to_delete"):
-            db.session.delete(story)
+            if story:
+                db.session.delete(story)
             continue
 
         if not story:

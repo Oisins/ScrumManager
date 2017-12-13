@@ -105,6 +105,7 @@
         {% call forms.modal("bearbeiten", "Impediment bearbeiten", [["delete", True], ["save", True]], True) %}
             <form method="post" id="form">
                 <input type="hidden" name="id" id="idInput">
+                <input type="hidden" name="to_delete" id="deleteInput">
                 {{ forms.textarea("beschreibung", "Beschreibung") }}
                 {{ forms.input("status", "Status") }}
                 <div class="form-group">

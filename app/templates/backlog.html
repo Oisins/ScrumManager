@@ -65,13 +65,13 @@
         }
 
         class Story {
-            constructor(id, titel = "", beschreibung = "", kriterien = [], sprint_id) {
-                this.id = id || uuid();
+            constructor(id=-1, titel = "", beschreibung = "", kriterien = [], sprint_id) {
+                this.id = id;
                 this.to_delete = false;
                 this.titel = titel;
                 this.beschreibung = beschreibung;
                 this.kriterien = kriterien;
-                this.sprint_id = sprint_id;
+                this.sprint_id = sprint_id || -1;
 
                 this.dom = $(`{{ story_panel() }}`);
                 this.dom.find(".story-edit").click(() => this.edit());
@@ -91,8 +91,13 @@
                 this.dom.find(".story-titel").html(this.titel);
                 this.dom.find(".story-beschreibung").html(this.beschreibung);
                 var link = this.dom.find(".story-link");
-                link.attr("href", "/sprints/" + this.sprint_id);
-                link.html("Zu Sprint " + this.sprint_id);
+                if(this.sprint_id !== -1) {
+                    link.attr("href", "/sprints/" + this.sprint_id);
+                    link.html("Zu Sprint " + this.sprint_id);
+                }else{
+                    link.attr("href", "");
+                    link.html("Nicht zugewiesen");
+                }
 
             }
 
@@ -155,6 +160,10 @@
             $("#add-kriterium").click(() => editing_story.add_kriterium());
             $("#bearbeitenModalSave").click(() => editing_story.save());
             $("#bearbeitenModalDelete").click(() => editing_story.remove());
+            $("#addButton").click(() => {
+                var story = new Story(-1, "Neue Story", "", [], -1);
+                story.edit();
+            });
 
             $.getJSON("/api/stories").done(data => {
                 var story;
@@ -171,8 +180,9 @@
     <form method="post" id="form">
         <input type="hidden" name="data">
     </form>
-    <div class="container pt-3" id="container">
+    <div class="container my-3" id="container">
     </div>
+    <div class="text-center">{{ forms.add_button(size=3) }}</div>
 
     {% call forms.modal("bearbeiten", "Story bearbeiten", [["delete", False], ["save", False]]) %}
         {{ forms.input("editTitle", "Titel", "Titel") }}
