@@ -1,8 +1,6 @@
 var users = {};
-var unsaved_changes = false;
 var editing_task = {};
 var editing_story = {};
-var task_id = 0;
 var modal;
 var taskboard;
 
@@ -274,7 +272,6 @@ class TaskBoard {
 
     }
 
-
     set unsaved_changes(val) {
         this._unsaved_changes = val;
         if (val) {
@@ -328,7 +325,7 @@ class TaskBoard {
          */
         $("#speichern").click(() => {
             // Warnung ausschalten
-            unsaved_changes = false;
+            this.unsaved_changes = false;
 
             var data = this.stories.map(story => story.to_json());
 
@@ -340,7 +337,6 @@ class TaskBoard {
         });
 
         $("#sprint-form").find("input,textarea").on('change input propertychange paste', () => {
-            console.log("CHANGE");
             taskboard.unsaved_changes = true;
         });
     }

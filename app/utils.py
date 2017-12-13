@@ -23,3 +23,10 @@ def register_processors(app):
         return dict(aktiver_sprint=aktiver_sprint(),
                     decode_date=decode_date,
                     encode_date=encode_date)
+
+    @app.template_filter('iso_datum')
+    def reverse_filter(date):
+        if not date:
+            return ""
+        return date.strftime('%d.%m.%Y')
+
