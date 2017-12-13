@@ -3,6 +3,7 @@ from flask import Flask, request, render_template, redirect
 from flask_login import LoginManager, current_user
 from config import config
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import find_modules, import_string
 
 
 db = SQLAlchemy()
@@ -50,8 +51,10 @@ def create_app(config_name):
             return redirect("/"), 403
         return render_template('404.html'), 404
 
-    for blueprint in routes.blueprints:
-        app.register_blueprint(blueprint)
+    for filename in find_modules('app.routes'):
+        mod = import_string(filename)
+        if hasattr(mod, 'blueprint'):
+            app.register_blueprint(mod.blueprint)
 
     register_processors(app)
 

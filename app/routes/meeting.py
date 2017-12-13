@@ -3,15 +3,15 @@ import json
 from flask import Blueprint, render_template, redirect, request
 from app.models import db, User, Antwort, Meeting
 
-meeting_blueprint = Blueprint('meeting', __name__)
+blueprint = Blueprint('meeting', __name__)
 
 
-@meeting_blueprint.route("/meetings")
+@blueprint.route("/meetings")
 def seite_meetings():
     return render_template("meetings.html", meetings=Meeting.query.all())
 
 
-@meeting_blueprint.route("/meetings/neu")
+@blueprint.route("/meetings/neu")
 def seite_meetings_neu():
     meeting = Meeting()
     db.session.add(meeting)
@@ -19,12 +19,12 @@ def seite_meetings_neu():
     return redirect(f"/meetings/{meeting.id}")
 
 
-@meeting_blueprint.route("/meetings/<meeting_id>")
+@blueprint.route("/meetings/<meeting_id>")
 def seite_meeting(meeting_id):
     return render_template("meeting.html", meeting=Meeting.query.get_or_404(meeting_id), users=User.query.all())
 
 
-@meeting_blueprint.route("/meetings/<meeting_id>", methods=["POST"])
+@blueprint.route("/meetings/<meeting_id>", methods=["POST"])
 def seite_meeting_post(meeting_id):
     db.session.autoflush = False
 

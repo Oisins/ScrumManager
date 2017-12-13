@@ -2,28 +2,28 @@
 from flask import Blueprint, jsonify, redirect, request
 from app.models import Task, User, Story, Sprint, Meeting, db
 
-api_blueprint = Blueprint('api', __name__, url_prefix="/api")
+blueprint = Blueprint('api', __name__, url_prefix="/api")
 
 
-@api_blueprint.route("/tasks")
+@blueprint.route("/tasks")
 def api_get_tasks():
     tasks = Task.query.all()
     return jsonify([task.json() for task in tasks])
 
 
-@api_blueprint.route("/users")
+@blueprint.route("/users")
 def api_get_users():
     users = User.query.all()
     return jsonify([user.json() for user in users])
 
 
-@api_blueprint.route("/meetings")
+@blueprint.route("/meetings")
 def api_meetings():
     meetings = Meeting.query.all()
     return jsonify([meeting.json() for meeting in meetings])
 
 
-@api_blueprint.route("/newuser", methods=["POST"])
+@blueprint.route("/newuser", methods=["POST"])
 def api_new_user():
     user = User()
     user.name = request.form.get("name", "Neuer Nutzer")
@@ -34,19 +34,19 @@ def api_new_user():
     return redirect("/")
 
 
-@api_blueprint.route("/stories")
+@blueprint.route("/stories")
 def api_stories():
     stories = Story.query.all()
     return jsonify([story.json() for story in stories])
 
 
-@api_blueprint.route("/sprint/<s_id>")
+@blueprint.route("/sprint/<s_id>")
 def api_sprint(s_id):
     sprint = Sprint.query.get(s_id)
     return jsonify(sprint.json())
 
 
-@api_blueprint.route("/burndown/<s_id>")
+@blueprint.route("/burndown/<s_id>")
 def api_burndown_data(s_id):
     sprint = Sprint.query.get(s_id)
     if not sprint:

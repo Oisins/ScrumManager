@@ -2,12 +2,12 @@
 import json
 from flask import Blueprint, render_template, redirect, request
 from flask_login import current_user
-from app.models import db, User, Sprint, Story, Task, Kriterium
+from app.models import db, User, Sprint, Story, Task, Kriterium, Impediment
 
-main_blueprint = Blueprint('main', __name__)
+blueprint = Blueprint('main', __name__)
 
 
-@main_blueprint.route("/")
+@blueprint.route("/")
 def seite_index():
     tasks = Task.query.filter_by(user=current_user, sprint=Sprint.get_aktiv()) \
         .order_by(Task.status) \
@@ -16,12 +16,12 @@ def seite_index():
     return render_template("dashboard.html", tasks=tasks)
 
 
-@main_blueprint.route("/backlog", methods=["GET"])
+@blueprint.route("/backlog", methods=["GET"])
 def seite_backlog_get():
     return render_template("backlog.html", stories=Story.query.all(), sprints=Sprint.query.all())
 
 
-@main_blueprint.route("/backlog", methods=["POST"])
+@blueprint.route("/backlog", methods=["POST"])
 def seite_backlog_post():
     data = json.loads(request.form.get("data"))
     story = Story.query.get(data.get("id"))
@@ -44,7 +44,7 @@ def seite_backlog_post():
     return redirect("/backlog")
 
 
-@main_blueprint.route("/users", methods=["GET", "POST"])
+@blueprint.route("/users", methods=["GET", "POST"])
 def seite_users():
     if request.method == "GET":
         return render_template("users.html",
@@ -69,7 +69,7 @@ def seite_users():
     return redirect("/users")
 
 
-@main_blueprint.route("/sprints", methods=["GET", "POST"])
+@blueprint.route("/sprints", methods=["GET", "POST"])
 def seite_sprints():
     if request.method == "POST" and request.form.get("neu", False):
         sprint = Sprint()
@@ -80,4 +80,35 @@ def seite_sprints():
     return render_template("sprints.html", sprints=Sprint.query.all())
 
 
+@blueprint.route("/impediment", methods=["GET"])
+def seite_impediment_get():
+    impediment = Impediment.query.all()
 
+    return render_template("impediment.html", impediments=impediment)
+
+
+@blueprint.route("/impediment", methods=["POST"])
+def seite_impediment_post():
+    impediment_id = request.form.get("id", "")
+    if not impediment_id:
+        return redirect("/impediment")
+
+    impediment = Impediment.query.get(impediment_id)
+
+    if request.form.get("delete", False):
+        db.session.delete(impediment)
+        db.session.commit()
+        return redirect("/impediment")
+
+    if not impediment:
+        impediment = Impediment()
+        db.session.add(impediment)
+
+    impediment.beschreibung = request.form.get("beschreibung")
+    impediment.status = request.form.get("status")
+    impediment.prio = request.form.get("prio")
+    impediment.verantwortlich = request.form.get("verantwortlich")
+    impediment.behandlung = request.form.get("behandlung")
+
+    db.session.commit()
+    return redirect("/impediment")
